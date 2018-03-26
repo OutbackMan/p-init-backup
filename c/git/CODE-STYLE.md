@@ -16,14 +16,17 @@ This is a short document describing my preferred coding style for C projects. Co
 ## Table of Contents
 [Program Structure](#program-structure)
 [Formatting](#formatting)
-[Naming](#program-structure)
-[Header Files](#program-structure)
-[Variables](#program-structure)
-[Functions](#program-structure)
-[Compound Types](#program-structure)
-[Loops](#program-structure)
-[Conditionals](#program-structure)
+[Naming](#naming)
+[Files](#files)
+[Variables](#variables)
+[Macros](#macros)
+[Functions](#functions)
+[If](#if)
+[For-While-DoWhile](#for-while-dowhile)
+[Switch](#switch)
+[Struct-Union](#struct-union)
 [Comments](#comments)
+[Final Remarks](#final-remarks)
 
 ### Program Structure
 * All `.h` files are to be located in an `include/` directory.
@@ -54,12 +57,7 @@ For example:
 unsigned large_factorial = factorial( 15 ); 
 
 // Acceptable
-unsigned large_factorial = factorial( (10 + 3) * (1 + 7) );
-```
-* If multiple operands are present, enclose in parentheses to help readers understand logic, even if not semantically necessary.
-For example:
-```c
-unsigned hypotenuse = sqrt( (opposite_side * opposite_side) + (adjacent_side * adjacent_side) );
+unsigned large_factorial = factorial((10 + 3) * (1 + 7));
 ```
 * Always use parentheses for `sizeof`.
 For example:
@@ -78,6 +76,7 @@ for (int counter = 0; counter < 10; ++counter) {
 ```
 ### Naming
 * Names should be descriptive and concise.
+* Avoid hungarian notation.
 * Order storage class specifier, type qualifier and then type specifier.
 For example:
 ```c
@@ -261,11 +260,7 @@ int object_create(Object input_output[restrict static 1],
 * Arrange parameters as input-output, input and output.
 * If a parameter is to be not null, indicate with `[static 1]`
 * Use named parameters for prototypes.
-### For/While/Do While
-* Always use egyptian brackets, even if body is one statement.
-* Ensure loops perform a single task.
-* In general, use `for` when acting a known number of times and `while` for an unknown number of times.
-* Empty body should be commented.
+### If
 * Explicitly compare, unless obviously a boolean value.
 For example:
 ```c
@@ -284,7 +279,12 @@ if (door_is_open) {
 	puts("Door is open!");	
 }
 ```
-* Use while(true) for an infinite loop.
+### For-While-DoWhile
+* Always use egyptian brackets, even if body is one statement.
+* Ensure loops perform a single task.
+* In general, use `for` when acting a known number of times and `while` for an unknown number of times.
+* Empty body should be commented.
+* Use `while(true)` for an infinite loop.
 * Avoid `do while` loops.
 ### Switch
 * Ensure case statements have the same indentation as the switch statement.
@@ -303,7 +303,7 @@ default:
 }
 ```
 * Always include `default:`, unless switching on an `enum`.
-### Struct/Union
+### Struct-Union
 * Always typedef.
 For example:
 ```c
@@ -318,7 +318,18 @@ typedef struct {
 * When writing comments use properly constructed sentences, including punctuation. Furthermore, don't make assumptions or make
     implications about race, gender, religion, political orientation or anything
     else that isn't relevant to the project.
-* For blocks of code, use `//` single or double line comments. 
+* Use `//` line comments at end of declaration or statement.
+For example:
+```c
+// Bad
+
+// Measured in kilograms
+double mass_of_earth = 6.0E+24;
+
+// Acceptable
+
+double mass_of_earth = 6.0E+24;	// Measured in kilograms
+```
 * For compound types or functions, describe purpose and example usage.
 For example:
 ```c
@@ -348,7 +359,7 @@ path/to/file/file-name:
 	"File description"
 
 PROJECT-NAME:
-	"Project description"
+	"Project description" (i.e. repository description on GitHub)
 
 License:
 	"This file is subject to the terms and conditions defined in
@@ -358,3 +369,14 @@ License:
 ```
 ### Final Remarks
 In general, I try to avoid the excessive use of gcc extensions wherever the C11 standard offers a suitably safe, efficient, concise and structured alternative (in relation to [structured programming](https://en.wikipedia.org/wiki/Structured_programming) alternative.
+
+> **NOTE**
+* Many of the guidelines expressed here have been distilled into [GNU indent](link) rules inside a [wrapper script](link) I have created. This file is distributed in all of my C projects. It is intended to be used as a code linter.
+For example:
+```bash
+# Inside of root project directory
+# Give executable permissions (first time using only)
+chmod +x scripts/linter
+# Execute
+scripts/linter
+```
