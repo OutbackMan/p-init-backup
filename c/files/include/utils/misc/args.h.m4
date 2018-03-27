@@ -1,12 +1,14 @@
 m4_changecom()m4_dnl
-m4_define(`M4_LPROJECT_NAME_M4', `m4_esyscmd(echo -n $(basename $(cat ~/.working-on)))')m4_dnl
+m4_define(`M4_LPROJECT_NAME_M4',`m4_esyscmd(echo -n $(basename $(cat ~/.working-on)))')m4_dnl
 m4_define(`M4_UPROJECT_NAME_M4', `m4_esyscmd((echo -n $(basename $(cat ~/.working-on))) | tr [a-z] [A-Z])')m4_dnl
-m4_define(`M4_DATE_M4', `m4_esyscmd(echo -n $(date +"%B %d, %Y (%Z)"))')m4_dnl
 m4_define(`M4_GIT_USER_NAME_M4', `m4_esyscmd(echo -n $(git config user.name))')m4_dnl
 m4_define(`M4_GIT_USER_EMAIL_M4', `m4_esyscmd(echo -n $(git config user.email))')m4_dnl
+m4_define(`GITHUB_USER_NAME', `m4_esyscmd(echo -n $(cat ~/.working-with))')m4_dnl
+m4_define(`GITHUB_USER_API_URL', `https://api.github.com/users`'GITHUB_USER_NAME`'/repos')m4_dnl
+m4_define(`M4_PROJECT_DESCRIPTION_M4', `m4_esyscmd(echo -n $(curl `'GITHUB_USER_API_URL`' | jq '[] | select(.name == `'M4_LPROJECT_NAME_M4`') | .description')m4_dnl
 /*******************************************************************************
 
-utils/misc/`'M4_LPROJECT_NAME_M4`'-args.h: 
+utils/misc/args.h: 
 	Handle command line argument parsing.
 
 `'M4_UPROJECT_NAME_M4`':
@@ -20,8 +22,8 @@ License:
 
 *******************************************************************************/
 
-#ifndef __utils_misc_`'M4_UPROJECT_NAME_M4`'_handle_args_h__
-#define __utils_misc_`'M4_UPROJECT_NAME_M4`'_handle_args_h__
+#ifndef __utils_misc_args_h__
+#define __utils_misc_args_h__
 
 typedef struct {
 	bool want_verbose;
@@ -29,6 +31,6 @@ typedef struct {
 
 extern const `'M4_UPROJECT_NAME_M4`'_Args `'M4_LPROJECT_NAME_M4`'_default_args; 
 
-void `'M4_LPROJECT_NAME_M4`'_args_handle_args(`'M4_UPROJECT_NAME_M4`'_Args args, int argc, char* argv[argc + 1]);
+void `'M4_LPROJECT_NAME_M4`'_parse_args(`'M4_UPROJECT_NAME_M4`'_Args args, int argc, char* argv[argc + 1]);
 
 #endif

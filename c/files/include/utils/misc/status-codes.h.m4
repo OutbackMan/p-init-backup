@@ -21,7 +21,6 @@ Developer Notes:
 #include <stdint.h>
 
 #define `'M4_UPROJECT_NAME_M4`'_STATUS_CODES_MAP(X-ENTRY) \
-	X-ENTRY(_ENTERED, "`'M4_LPROJECT_NAME_M4`' function entered") \
 	X-ENTRY(SUCCESS, "generic `'M4_LPROJECT_NAME_M4`' success") \
 	X-ENTRY(ERROR, "generic `'M4_LPROJECT_NAME_M4`' error")
 	X-ENTRY(ENOMEM, "not enough memory") \

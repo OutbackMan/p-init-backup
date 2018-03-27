@@ -1,5 +1,12 @@
 #! /usr/bin/env sh
 
+## CREATE EMPTY REPOSITORY ON GITHUB
+## CREATE GITTER (https://gitter.im/projectname)
+## CREATE GITHUB PAGES (settings, https://yourusername.github.io/projectname/)
+## EXECUTE WORKON
+## EXECUTE WORKWITH
+## EXECUTE WORK
+
 ## Project information
 printf -v project_name "%s" $(basename $(cat ~/.working-on))
 read -r github_user_name < ~/.working-with
@@ -56,6 +63,8 @@ m4 -P ~/.p-init/c/files/docs/guide.rst.m4 > docs/src/guide.rst
 m4 -P ~/.p-init/c/files/docs/api.rst.m4 > docs/src/api.rst
 
 ### Travis CI
+# We run unit tests ourselves before commiting. The CI server then runs these tests against a clean build of the entire project
+# This step should be done when we have a project specific component
 cp ~/.p-init/c/travis_ci/.travis.yml . 
 
 ### General
@@ -64,6 +73,8 @@ cp ~/.p-init/c/git/LICENSE-docs.md > LICENSE-docs.md
 m4 -P ~/.p-init/c/git/README.md.m4 > README.md # investigate git pages
 m4 -P ~/.p-init/c/git/AUTHORS.md.m4 > AUTHORS.md # investigate practical usage of gpg keys
 m4 -P ~/.p-init/c/git/CONTRIBUTING.md.m4 > CONTRIBUTING.md
+m4 -P ~/.p-init/c/git/index.md.m4 > index.md # for github pages site
+m4 -P ~/.p-init/c/git/_config.yml.m4 >> _config.yml # for github pages jekyll theme
 
 ### Git ignore
 cp ~/.p-init/c/git/.gitignore . 

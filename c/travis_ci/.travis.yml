@@ -1,0 +1,74 @@
+# We want fast container based execution
+sudo: false
+language: c
+
+# Just look at online dashboard
+notifications:
+  email: false
+
+# Override typical 50 depth clone
+git:
+  depth: 1
+
+branches:
+  except:
+    - master
+    - /^release\/.*$/
+
+branches:
+  only:
+    - develop
+    - /^feature\/.*$/
+    - /^hotfix\/.*$/
+
+matrix:
+  fast_finish: true
+
+  include:
+	- os: linux
+      dist: trusty
+	  compiler: gcc-5
+	  addons:
+	    apt:
+		  # Add ppa to allow for unverified libraries
+		  sources: 
+		    - ubuntu-toolchain-r-test
+		  packages:
+		    - time
+	  script: \
+	    autoreconf -i && \
+		cd build/ && ../configure && \
+		make && \
+		make check
+		 
+  include:
+	- os: linux
+      dist: trusty
+	  compiler: gcc-6
+	  addons:
+	    apt:
+		  sources: 
+		    - ubuntu-toolchain-r-test
+		  packages:
+		    - time
+	  script: \
+	    autoreconf -i && \
+		cd build/ && ../configure && \
+		make && \
+		make check
+
+  include:
+	- os: linux
+      dist: trusty
+	  compiler: gcc-7
+	  addons:
+	    apt:
+		  sources: 
+		    - ubuntu-toolchain-r-test
+		  packages:
+		    - time
+	  script: \
+	    autoreconf -i && \
+		cd build/ && ../configure && \
+		make && \
+		make check

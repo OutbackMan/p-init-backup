@@ -18,12 +18,14 @@ Credits:
 
 *******************************************************************************/
 
+#include "filename.h"
+
 #include <check.h>
 #include <stdlib.h>
 
 START_TEST(test_name)
 {
-	ck_assert_int_eq(0, 0);	
+	
 }
 END_TEST
 
