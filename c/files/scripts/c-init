@@ -26,9 +26,9 @@ mkdir src/utils/{misc,data-structures,algorithms}
 ## File setup
 ### C files
 #### Core
-m4 -P ~/.p-init/c/files/src/project.c.m4 > "src/${project_name}".c # base: ✓ (change header comment to project-args.c)
+m4 -P ~/.p-init/c/files/src/project.c.m4 > "src/${project_name}".c # ✓
 
-m4 -P ~/.p-init/c/files/include/utils/misc/common.h.m4 > include/utils/misc/common.h # base: ✓ (gnu extensions and cleanup macro)
+m4 -P ~/.p-init/c/files/include/utils/misc/common.h.m4 > include/utils/misc/common.h # type safe macros 
 
 m4 -P ~/.p-init/c/files/include/utils/misc/status-codes.h.m4 > include/utils/misc/status-codes.h # base: ✓
 m4 -P ~/.p-init/c/files/src/utils/misc/status-codes.c.m4 > src/utils/misc/status-codes.c # ✓

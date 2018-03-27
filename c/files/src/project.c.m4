@@ -24,7 +24,7 @@ License:
 #include "utils/misc/common.h"
 #include "utils/misc/status-codes.h"
 #include "utils/misc/args.h"
-#include "utils/misc/log.h"
+#include "utils/misc/logger.h"
 
 #include <stdlib.h>
 #include <stdio.h>
