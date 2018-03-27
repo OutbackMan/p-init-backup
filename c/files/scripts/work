@@ -1,0 +1,11 @@
+## Git related information
+git_user_name=$(echo -n $(git config user.name))
+git_user_email=$(echo -n $(git config user.email))
+read -r github_user_name < ~/.working-with
+github_user_api_url="https://api.github.com/users/${github_user_name}/repos"
+
+## Project related information
+read -r project_directory < ~/.working-on 
+project_lname=$(echo -n $(basename "${project_directory}"))
+project_uname=$(echo -n "${project_lname}" | tr 'a-z' 'A-Z')
+project_description=$(echo -n $(curl "${github_user_api_url}" | jq '[] | select(.name == "${project_lname}") | .description')
