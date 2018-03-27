@@ -88,7 +88,8 @@ static const int age = 15;
 * For file names use lower case `hyphen-delimiters`.
 * For variable and function names use lower `snake_case`.
 * For structs use `PascalCase`.
-* For macros, enums and constants use upper `SNAKE_CASE`.
+* For enums, constants and public macros use upper `SNAKE_CASE`.
+* For private macros, use a prefixed lower snake case `__snake_case`.
 * For function-like macro parameters, use lower `snake_case` if non-macro, otherwise use upper `SNAKE_CASE`.
 * For booleans, use prepositions that indicate its truthyness.
 For example:

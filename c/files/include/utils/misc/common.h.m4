@@ -29,8 +29,8 @@ License:
 
 #include <signal.h>
 
-#define `'M4_UPROJECT_NAME_M4`'_TOSTRING(value) #value
-#define `'M4_UPROJECT_NAME_M4`'_STRINGIFY(value) `'M4_UPROJECT_NAME_M4`'_TOSTRING(value)
+#define `'M4_UPROJECT_NAME_M4`'_TOSTRING(val) #val
+#define `'M4_UPROJECT_NAME_M4`'_STRINGIFY(val) `'M4_UPROJECT_NAME_M4`'_TOSTRING(val)
 
 #if defined(`'M4_UPROJECT_NAME_M4`'_DEBUG_MODE)
 #define `'M4_UPROJECT_NAME_M4`'_ASSERT(cond, msg) \
@@ -41,6 +41,13 @@ License:
 #else
 #define `'M4_UPROJECT_NAME_M4`'_ASSERT(cond)
 #endif
+
+#define `'M4_UPROJECT_NAME_M4`'_IMPLIES(truth, implication)	\
+	({	\
+		__auto_type _truth = (truth);	\
+		__auto_type _implication = (implication);	\
+		(!(_truth) || (_implication));	\
+	)}
 
 #define `'M4_UPROJECT_NAME_M4`'_CLEANUP(func)	\
 	__attribute__((cleanup(func)))	
@@ -53,6 +60,41 @@ License:
 		}	\
 	}
 
+#define `'M4_UPROJECT_NAME_M4`'_MAX(val1, val2)	\
+	({	\
+		__auto_type _val1 = (val1);	\
+		__auto_type _val2 = (val2);	\
+		(void) (&_val1 == &_val2);	\
+		(_val1 > _val2 ? _val1 : _val2);
+	)}
+
+#define `'M4_UPROJECT_NAME_M4`'_MIN(val1, val2)	\
+	({	\
+		__auto_type _val1 = (val1);	\
+		__auto_type _val2 = (val2);	\
+		(void) (&_val1 == &_val2);	\
+		(_val1 < _val2 ? _val1 : _val2);
+	)}
+
+#define `'M4_UPROJECT_NAME_M4`'_ABS(val)	\
+	({	\
+		__auto_type _val = (val);	\
+		(_val < 0 ? -_val1 : _val);
+	)}
+
+#define __warn_if_not_zero(expr)	\
+	sizeof(struct { int: -!!(expr); })
+
+#define __are_same_type(type1, type2)	\
+	__builtin_types_compatible_p(typeof(type1), typeof(type2))
+
+#define __is_array(arr)	\
+	warn_if_not_zero(__are_same_type(arr, &(arr)[0]))	
+
+#define `'M4_UPROJECT_NAME_M4`'_ARRAY_SIZE(arr)	\
+	(sizeof(arr) / sizeof(arr[0])) + __is_array(arr)
+
+
 #define `'M4_UPROJECT_NAME_M4`'_PURE __attribute__((pure))
 #define `'M4_UPROJECT_NAME_M4`'_CONST __attribute__((const))
 #define `'M4_UPROJECT_NAME_M4`'_COLD __attribute__((cold))
@@ -62,17 +104,10 @@ License:
 #define `'M4_UPROJECT_NAME_M4`'_USED __attribute__((used))
 #define `'M4_UPROJECT_NAME_M4`'_UNUSED __attribute__((unused))
 #define `'M4_UPROJECT_NAME_M4`'_PACKED __attribute__((packed))
-#define `'M4_UPROJECT_NAME_M4`'_LIKELY(value) __builtin_expect(!!(value), 1)
-#define `'M4_UPROJECT_NAME_M4`'_UNLIKELY(value) __builtin_expect(!!(value), 0)
+#define `'M4_UPROJECT_NAME_M4`'_LIKELY(val) __builtin_expect(!!(val), 1)
+#define `'M4_UPROJECT_NAME_M4`'_UNLIKELY(val) __builtin_expect(!!(val), 0)
 #define `'M4_UPROJECT_NAME_M4`'_DESIGNATED __attribute__((designated_init))
 #define `'M4_UPROJECT_NAME_M4`'_FLATTEN __attribute__((flatten))
-
-#define max(a, b)	\
-	({	\
-	__auto_type_ _a = (a);	\
-	__auto_type_ _b = (b);	\
-	(void) (&_a == &_b);	\
-	(_a > _b ? _a : _b);	\
-	})	
+#define `'M4_UPROJECT_NAME_M4`'_FLATTEN __attribute__((flatten))
 
 #endif
