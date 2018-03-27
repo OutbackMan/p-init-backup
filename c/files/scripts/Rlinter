@@ -1,0 +1,70 @@
+read -r project_directory < ~/.working-on
+
+readonly GENERAL_PARAMS="--ignore-profile --no-verbosity"
+
+readonly FORMAT_PARAMS="--blank-lines-after-declarations --brace-indent0 "\
+		"--break-before-boolean-operator --continuation-indent4 "\
+		"--indent-level4 --line-length80 --no-space-after-casts "\
+		"--swallow-optional-blank-lines --tab-size4"
+
+readonly FUNCTION_PARAMS="--blank-lines-after-procedures "\
+		"--braces-after-func-def-line --continue-at-parentheses "\
+		"--dont-break-procedure-type --no-space-after-function-call-names "\
+		"--no-space-after-parentheses"
+
+readonly CONDITIONAL_PARAMS="--blank-lines-before-block-comments"
+
+readonly STRUCT_UNION_PARAMS=
+
+readonly CASE_PARAMS=
+
+readonly COMMENT_PARAMS=
+
+readonly LOOP_PARAMS=
+
+readonly MACRO_PARAMS=
+
+
+
+
+
+--braces-after-if-line 
+--cuddle-else
+--else-endif-column33
+--space-after-if
+
+--braces-on-struct-decl-line
+--struct-brace-indentation0
+
+--case-indentation0
+--indent-label0
+
+--comment-delimiters-on-blank-lines 
+--comment-indentation33
+--declaration-comment-column33
+--dont-star-comments
+
+--cuddle-do-while
+--space-after-for
+--space-after-while
+
+--preprocessor-indentation0
+EOF
+
+readonly GENERAL_PARAMS=
+
+readonly GENERAL_PARAMS=
+
+readonly GENERAL_PARAMS=
+
+readonly GENERAL_PARAMS=
+
+
+
+readonly PARAMS=
+
+readonly FILES=$(find "${project_directory}" -type f -name '*.c' -o -name '*.h')
+
+for file in "${FILES}"; do
+	indent "${PARAMS}"
+done
