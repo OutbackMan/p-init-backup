@@ -12,7 +12,7 @@ printf -v project_name "%s" $(basename $(cat ~/.working-on))
 git init .
 
 ## Folder setup
-mkdir {src,include,lib,tests,docs,bin,m4,scripts}
+mkdir {src,include,lib,tests,docs,bin,m4,scripts,img}
 mkdir docs/code
 mkdir lib/argtable3
 mkdir include/{utils,core}
@@ -51,11 +51,12 @@ pushd docs/
 sphinx-quickstart
 popd
 
-m4 -P '~/.p-init/c/files/docs/source/index.rst.m4' > 'docs/source/index.rst'
-m4 -P '~/.p-init/c/files/docs/design.rst.m4' > 'docs/src/design.rst'
-m4 -P '~/.p-init/c/files/docs/tutorial.rst.m4' > 'docs/src/tutorial.rst'
-m4 -P '~/.p-init/c/files/docs/guide.rst.m4' > 'docs/src/guide.rst'
-m4 -P '~/.p-init/c/files/docs/api.rst.m4' > 'docs/src/api.rst'
+mkdir "docs/source/"{design,guide,api}
+
+m4 -P '~/.p-init/c/files/docs/source/main-index.rst.m4' > 'docs/source/main-index.rst.m4'
+m4 -P '~/.p-init/c/files/docs/source/design/design-index.rst.m4' > 'docs/source/design/design-index.rst.m4'
+m4 -P '~/.p-init/c/files/docs/source/guide/guide-index.rst.m4' > 'docs/source/guide/guide-index.rst.m4'
+m4 -P '~/.p-init/c/files/docs/source/api/api-index.rst.m4' > 'docs/source/api/api-index.rst.m4'
 
 ### Travis CI
 # We run unit tests ourselves before commiting. The CI server then runs these tests against a clean build of the entire project

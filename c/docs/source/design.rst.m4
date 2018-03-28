@@ -1,13 +1,20 @@
-
+m4_changecom()m4_dnl
+m4_define(`M4_LPROJECT_NAME_M4', `m4_esyscmd(echo -n $(basename $(cat ~/.working-on)))')m4_dnl
+m4_define(`M4_UPROJECT_NAME_M4', `m4_esyscmd((echo -n $(basename $(cat ~/.working-on))) | tr [a-z] [A-Z])')m4_dnl
+m4_define(`M4_CURRENT_YEAR_M4', `m4_esyscmd(echo -n $(date +"%Y"))')m4_dnl
+m4_define(`M4_PROJECT_DESCRIPTION_M4`, `m4_esyscmd(echo -n $(curl https://api.github.com/users/`'M4_GITHUB_USER_NAME_M4`'/repos | jq '[] | select(.name == "`'M4_LPROJECT_NAME_M4`'") | .description')m4_dnl
 .. _design:
 
-Design overview
-===============
+Design Overview (TODO)
+======================
 
-libuv is cross-platform support library which was originally written for NodeJS. It's designed
+`'MR_LPROJECT_NAME_M4`' is a `'M4_PROJECT_DESCRIPTION`'.
+
+EXAMPLE:
+::libuv is cross-platform support library which was originally written for NodeJS. It's designed
 around the event-driven asynchronous I/O model.
 
-The library provides much more than a simple abstraction over different I/O polling mechanisms:
+::The library provides much more than a simple abstraction over different I/O polling mechanisms:
 'handles' and 'streams' provide a high level abstraction for sockets and other entities;
 cross-platform file I/O and threading functionality is also provided, amongst other things.
 
@@ -17,7 +24,6 @@ relate to:
 .. image:: static/architecture.png
     :scale: 75%
     :align: center
-
 
 Handles and requests (Abstractions)
 ^^^^^^^^^^^^^^^^^^^^
@@ -35,8 +41,8 @@ handle: write requests are used to write data on a handle; or standalone: getadd
 don't need a handle they run directly on the loop.
 
 
-The I/O loop (Main Loop)
-^^^^^^^^^^^^
+Main Loop (TODO)
+^^^^^^^^^^^^^^^^
 
 The I/O (or event) loop is the central part of libuv. It establishes the content for all I/O
 operations, and it's meant to be tied to a single thread. One can run multiple event loops

@@ -5,15 +5,15 @@
 `'M4_LPROJECT_DESCRIPTION`' is a `'M4_PROJECT_DESCRIPTION_M4`'.
 
 ## Feature Highlights
-	* Feature 1
-	* Feature 2
+	* Cross platform
+	* Flexible command line argument handling 
 
 ## Versioning
 `'M4_LPROJECT_NAME_M4`' follows the [semantic](https://semver.org/) versioning scheme.
 
 ## Licensing
 `'M4_LPROJECT_NAME_M4`' is licensed under the MIT license. Check the [LICENSE.md file](LICENSE.md).
-The documentation for `'M4_LPROJECT_NAME_M4`' is licensed under the CC 4.0 license. Check the [LICENSE-docs.md file](LICENSE-docs.md).
+The documentation for `'M4_LPROJECT_NAME_M4`' is licensed under the Creative Commons Attribution 4.0 International license. Check the [LICENSE-docs.md file](LICENSE-docs.md).
 
 ## Support
 For generic questions about `'M4_LPROJECT_NAME_M4`' you are encouraged to engage with the `'M4_LPROJECT_NAME_M4`' community on [gitter](link)
@@ -21,8 +21,6 @@ For generic questions about `'M4_LPROJECT_NAME_M4`' you are encouraged to engage
 ## Documentation
 The documentation for `'M4_LPROJECT_NAME_M4`' is located in the `docs/` subdirectory. It uses the [Sphinx](http://sphinx-doc.org/)
 framework, which makes it possible to build the documentation in multiple formats.
-
-Note: Windows users will have to use `make.bat`.
 
 ```bash
 $ # navigate to the location of `'M4_LPROJECT_NAME_M4`''s documentation:

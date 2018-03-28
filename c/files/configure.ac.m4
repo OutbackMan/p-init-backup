@@ -37,7 +37,7 @@ AX_CHECK_COMPILE_FLAG([-Wstrict-prototypes], [AX_APPEND_FLAG([-Wstrict-prototype
 ## Release and Debug Flags: 
 AS_IF([test "x$enable_release" = xyes], 
 	[AX_CHECK_COMPILE_FLAG([-O3], [AX_APPEND_FLAG([-O3])], [AC_MSG_WARN([-O3 flag wanted for `'M4_LPROJECT_NAME_M4`' release mode compilation, but it is not supported by current gcc compiler.])])], 
-	[AX_CHECK_COMPILE_FLAG([-Og], [AX_APPEND_FLAG([-Og])], [AC_MSG_WARN([-Og flag wanted for `'M4_LPROJECT_NAME_M4`' debug mode compilation, but it is not supported by current gcc compiler.])])])
+	[AX_CHECK_COMPILE_FLAG([-ggdb], [AX_APPEND_FLAG([-ggdb])], [AC_MSG_WARN([-ggdb flag wanted for `'M4_LPROJECT_NAME_M4`' debug mode compilation, but it is not supported by current gcc compiler.])])])
 
 # Shared Library Checking
 
