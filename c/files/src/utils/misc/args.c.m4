@@ -1,15 +1,14 @@
 m4_changecom()m4_dnl
 m4_define(`M4_LPROJECT_NAME_M4', `m4_esyscmd(echo -n $(basename $(cat ~/.working-on)))')m4_dnl
 m4_define(`M4_UPROJECT_NAME_M4', `m4_esyscmd((echo -n $(basename $(cat ~/.working-on))) | tr [a-z] [A-Z])')m4_dnl
-m4_define(`M4_DATE_M4', `m4_esyscmd(echo -n $(date +"%B %d, %Y (%Z)"))')m4_dnl
-m4_define(`M4_GIT_USER_NAME_M4', `m4_esyscmd(echo -n $(git config user.name))')m4_dnl
-m4_define(`M4_GIT_USER_EMAIL_M4', `m4_esyscmd(echo -n $(git config user.email))')m4_dnl
+m4_define(`M4_CURRENT_YEAR_M4', `m4_esyscmd(echo -n $(date +"%Y"))')m4_dnl
+m4_define(`M4_PROJECT_DESCRIPTION_M4`, `m4_esyscmd(echo -n $(curl https://api.github.com/users/`'M4_GITHUB_USER_NAME_M4`'/repos | jq '[] | select(.name == "`'M4_LPROJECT_NAME_M4`'") | .description')m4_dnl
 /*******************************************************************************
 
-Copyright (C) 2018, `'M4_GIT_USER_NAME_M4`' <`'M4_GIT_USER_EMAIL_M4`'>
+Copyright (C) `'M4_CURRENT_YEAR_M4`', Ryan E. McClue
 
-utils/misc/`'M4_LPROJECT_NAME_M4`'-args.c: 
-	"Handle command line argument parsing."
+utils/misc/args.c: 
+	"Command line argument handling."
 
 `'M4_UPROJECT_NAME_M4`':
 	"`'M4_PROJECT_DESCRIPTION_M4`'"
@@ -19,10 +18,9 @@ License:
 	'LICENSE.md', which is part of this source code package."
 
 *******************************************************************************/
-
-#include "utils/misc/`'M4_LPROJECT_NAME_M4`'-args.h"
-#include "utils/misc/`'M4_LPROJECT_NAME_M4`'-config.h"
-#include "utils/misc/`'M4_LPROJECT_NAME_M4`'-common.h"
+#include "utils/misc/args.h"
+#include "utils/misc/config.h"
+#include "utils/misc/common.h"
 
 #include "argtable3/argtable3.h"
 

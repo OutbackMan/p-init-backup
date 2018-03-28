@@ -1,0 +1,23 @@
+# Autotools
+Makefile.in
+Makefile
+aclocal.m4
+autom4te.cache/
+config.*
+compile
+config.sub
+configure
+depcomp
+install-sh
+missing
+
+# C intermediaries
+*.l[ao]
+
+# Sphinx
+docs/_build
+*.pyc
+
+# General
+*~
+*.swp

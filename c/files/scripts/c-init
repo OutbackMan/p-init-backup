@@ -4,12 +4,9 @@
 ## CREATE GITTER (https://gitter.im/projectname)
 ## CREATE GITHUB PAGES (settings, https://yourusername.github.io/projectname/)
 ## EXECUTE WORKON
-## EXECUTE WORKWITH
-## EXECUTE WORK
 
 ## Project information
 printf -v project_name "%s" $(basename $(cat ~/.working-on))
-read -r github_user_name < ~/.working-with
 
 ## Git init
 git init .
@@ -26,21 +23,19 @@ mkdir src/utils/{misc,data-structures,algorithms}
 ## File setup
 ### C files
 #### Core
-m4 -P ~/.p-init/c/files/src/project.c.m4 > "src/${project_name}".c # ✓
+m4 -P ~/.p-init/c/files/src/project.c.m4 > "src/${project_name}".c # ✓ cascade m4 and comment header structure
 
-m4 -P ~/.p-init/c/files/include/utils/misc/common.h.m4 > include/utils/misc/common.h # type safe macros 
+m4 -P ~/.p-init/c/files/include/utils/misc/common.h.m4 > include/utils/misc/common.h # ✓ clean up macro defintions
 
-m4 -P ~/.p-init/c/files/include/utils/misc/status-codes.h.m4 > include/utils/misc/status-codes.h # base: ✓
-m4 -P ~/.p-init/c/files/src/utils/misc/status-codes.c.m4 > src/utils/misc/status-codes.c # ✓
+m4 -P ~/.p-init/c/files/include/utils/misc/status-codes.h.m4 > include/utils/misc/status-codes.h # ✓
+m4 -P ~/.p-init/c/files/src/utils/misc/status-codes.c.m4 > src/utils/misc/status-codes.c # ✓ 
 
-m4 -P ~/.p-init/c/files/include/utils/misc/logger.h.m4 > include/utils/misc/logger.h # ✓
-m4 -P ~/.p-init/c/files/src/utils/misc/logger.c.m4 > src/utils/misc/logger.c # ✓
+m4 -P ~/.p-init/c/files/include/utils/misc/logger.h.m4 > include/utils/misc/logger.h # ✓ 
+m4 -P ~/.p-init/c/files/src/utils/misc/logger.c.m4 > src/utils/misc/logger.c # ✓ Function names
 
-m4 -P ~/.p-init/c/files/include/utils/misc/args.h.m4 > include/utils/misc/args.h # ✓
+m4 -P ~/.p-init/c/files/include/utils/misc/args.h.m4 > include/utils/misc/args.h # ✓ 
 m4 -P ~/.p-init/c/files/src/utils/misc/args.c.m4 > src/utils/misc/args.c
 
-## vimscript check suite template (refer to tests/test-project.c)
-###
 cp ~/.p-init/c/files/scripts/Rlinter scripts/.
 
 #### Drop in libraries
@@ -49,7 +44,7 @@ wget https://raw.githubusercontent.com/argtable/argtable3/master/argtable3.c > l
 ### Autotools
 wget http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=blob_plain;f=m4/ax_check_compile_flag.m4 > m4/ax_check_compile_flag.m4
 wget http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=blob_plain;f=m4/ax_append_flag.m4 > m4/ax_append_flag.m4
-m4 -P ~/.p-init/c/files/configure.ac.m4 > configure.ac # Define a PROJECT_BINARY macro based on host os
+m4 -P ~/.p-init/c/files/configure.ac.m4 > configure.ac
 m4 -P ~/.p-init/c/files/Makefile.am.m4 > Makefile.am
 ### Sphinx
 pushd docs/

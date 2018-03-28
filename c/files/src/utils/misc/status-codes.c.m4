@@ -1,24 +1,25 @@
 m4_changecom()m4_dnl
 m4_define(`M4_LPROJECT_NAME_M4', `m4_esyscmd(echo -n $(basename $(cat ~/.working-on)))')m4_dnl
 m4_define(`M4_UPROJECT_NAME_M4', `m4_esyscmd((echo -n $(basename $(cat ~/.working-on))) | tr [a-z] [A-Z])')m4_dnl
-m4_define(`M4_DATE_M4', `m4_esyscmd(echo -n $(date +"%B %d, %Y (%Z)"))')m4_dnl
-m4_define(`M4_GIT_USER_NAME_M4', `m4_esyscmd(echo -n $(git config user.name))')m4_dnl
-m4_define(`M4_GIT_USER_EMAIL_M4', `m4_esyscmd(echo -n $(git config user.email))')m4_dnl
+m4_define(`M4_CURRENT_YEAR_M4', `m4_esyscmd(echo -n $(date +"%Y"))')m4_dnl
+m4_define(`M4_PROJECT_DESCRIPTION_M4`, `m4_esyscmd(echo -n $(curl https://api.github.com/users/`'M4_GITHUB_USER_NAME_M4`'/repos | jq '[] | select(.name == "`'M4_LPROJECT_NAME_M4`'") | .description')m4_dnl
 /*******************************************************************************
 
-Name: utils/misc/`'M4_LPROJECT_NAME_M4`'-status-codes.c	Date of Creation: M4_DATE_M4
+Copyright (C) `'M4_CURRENT_YEAR_M4`', Ryan E. McClue
 
-Maintainer: M4_GIT_USER_NAME_M4 <`'M4_GIT_USER_EMAIL_M4`'>
+utils/misc/status-codes.c: 
+	"Status codes to be used by `'M4_UPROJECT_NAME_M4`' functions."
 
-Developer Notes:
+`'M4_UPROJECT_NAME_M4`':
+	"`'M4_PROJECT_DESCRIPTION_M4`'"
 
-
-Credits:
-
+License:
+	"This file is subject to the terms and conditions defined in
+	'LICENSE.md', which is part of this source code package."
 
 *******************************************************************************/
 
-#include "utils/misc/`'M4_LPROJECT_NAME_M4`'-status-codes.h"
+#include "utils/misc/status-codes.h"
 
 #include <stdbool.h>
 

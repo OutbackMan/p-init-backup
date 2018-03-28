@@ -4,11 +4,11 @@ AC_INIT([`'M4_LPROJECT_NAME_M4`', [0.0.1], [https://github.com/`'M4_GIT_USER_NAM
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects 1.15])
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_HEADERS([include/utils/misc/`'M4_LPROJECT_NAME_M4`'-config.h])
+AC_CONFIG_HEADERS([include/utils/misc/config.h])
 
 # OS Specific Operations
 AC_CANONICAL_HOST
-AS_CASE([$host_os], [mingw*|cygwin*], [AC_DEFINE([`'M4_UPROJECT_NAME_M4`'_BINARY_NAME], ["`'M4_LPROJECT_NAME_M4`'.exe"], [])],
+AS_CASE([$host_os], [mingw*], [AC_DEFINE([`'M4_UPROJECT_NAME_M4`'_BINARY_NAME], ["`'M4_LPROJECT_NAME_M4`'.exe"], [])],
 	[AC_DEFINE([`'M4_UPROJECT_NAME_M4`'_BINARY_NAME], ["./`'M4_LPROJECT_NAME_M4`'"], [])])
 
 # Argument Handling
@@ -23,6 +23,8 @@ AC_PROG_CC([gcc])
 
 ## Core Flags
 AX_CHECK_COMPILE_FLAG([-std=gnu11], [AX_APPEND_FLAG([-std=gnu11])], [AC_MSG_WARN([-std=gnu11 flag wanted for `'M4_LPROJECT_NAME_M4`' core compilation, but it is not supported by the current gcc compiler.])])
+
+AX_CHECK_COMPILE_FLAG([-Werror], [AX_APPEND_FLAG([-Werror])], [AC_MSG_WARN([-Werror flag wanted for `'M4_LPROJECT_NAME_M4`' core compilation, but it is not supported by the current gcc compiler.])])
 
 AX_CHECK_COMPILE_FLAG([-Wall], [AX_APPEND_FLAG([-Wall])], [AC_MSG_WARN([-Wall flag wanted for `'M4_LPROJECT_NAME_M4`' core compilation, but it is not supported by the current gcc compiler.])])
 
