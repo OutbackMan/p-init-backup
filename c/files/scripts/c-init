@@ -51,11 +51,11 @@ pushd docs/
 sphinx-quickstart
 popd
 
-m4 -P ~/.p-init/c/files/docs/index.rst.m4 > docs/src/index.rst
-m4 -P ~/.p-init/c/files/docs/design.rst.m4 > docs/src/design.rst
-m4 -P ~/.p-init/c/files/docs/tutorial.rst.m4 > docs/src/tutorial.rst
-m4 -P ~/.p-init/c/files/docs/guide.rst.m4 > docs/src/guide.rst
-m4 -P ~/.p-init/c/files/docs/api.rst.m4 > docs/src/api.rst
+m4 -P '~/.p-init/c/files/docs/source/index.rst.m4' > 'docs/source/index.rst'
+m4 -P '~/.p-init/c/files/docs/design.rst.m4' > 'docs/src/design.rst'
+m4 -P '~/.p-init/c/files/docs/tutorial.rst.m4' > 'docs/src/tutorial.rst'
+m4 -P '~/.p-init/c/files/docs/guide.rst.m4' > 'docs/src/guide.rst'
+m4 -P '~/.p-init/c/files/docs/api.rst.m4' > 'docs/src/api.rst'
 
 ### Travis CI
 # We run unit tests ourselves before commiting. The CI server then runs these tests against a clean build of the entire project

@@ -12,12 +12,13 @@ install-sh
 missing
 
 # C intermediaries
-*.l[ao]
+*.la
+*.o
 
 # Sphinx
-docs/_build
+docs/build
 *.pyc
 
 # General
-*~
+*~*
 *.swp
