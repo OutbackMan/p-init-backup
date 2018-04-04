@@ -47,8 +47,7 @@ Download the appropriate binaries for your OS from `'M4_LPROJECT_NAME_M4`' [rele
 
 | Linux/Mac               | Windows |
 | :---------------------: | :-----: |
-| git, gpg, GNU autotools | msys    |
-| gcc                     | mingw   |
+| git, gpg, GNU autotools, gcc | msys2   |
 
 ##### Libraries
 
