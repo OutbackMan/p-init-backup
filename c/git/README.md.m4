@@ -88,3 +88,13 @@ $ ./`'M4_LPROJECT_NAME_M4`' --verbose
 
 ## Contributing
 To obtain the guidelines for contributing to `'M4_LPROJECT_NAME_M4`', please refer to the [contributing file](CONTRIBUTING.md).
+
+
+
+windows:
+msys2 (x86_64) (install instructions)
+(if already installed: pacman -Syuu; then pacman -S base-devel mingw-w64-x86_64-toolchain git)
+(then open msys2 mingw 64-bit shell; can use gcc, make, autoreconf, etc.)
+(pacman -S mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_image mingw-w64-check)
+
+-lmingw32 -lSDL2main -lSDL2 (this order is necessary as gcc only resolves undefined symbols. needed for WinMain)
