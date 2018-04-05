@@ -3,7 +3,8 @@
 This is a short document describing my preferred coding style for C projects. Coding style is very personal, and I don't not want to force my views onto anybody. However, this is what goes for code that is be part of projects I maintain.
 
 > **NOTE**: 
-	* This guide assumes you are using a C11 compatible gcc compiler and that any cross-platform code exists as 3rd party libraries.
+	* This guide assumes you are using a C99 compatible C compiler.
+	gcc, clang, microsoft, xcode
 
 ## Opening Remarks
 	* Good programmers write consistent code that humans can understand.
