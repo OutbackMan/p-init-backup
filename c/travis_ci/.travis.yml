@@ -38,6 +38,7 @@ matrix:
 	  script:
 	    - CC=/usr/bin/gcc-5 cmake .
 	    - cmake --build . -- -j2
+	    - ctest -j2
 		 
   include:
 	- os: linux
