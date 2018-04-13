@@ -58,11 +58,6 @@ m4 -P '~/.p-init/c/files/docs/source/design/design-index.rst.m4' > 'docs/source/
 m4 -P '~/.p-init/c/files/docs/source/guide/guide-index.rst.m4' > 'docs/source/guide/guide-index.rst.m4'
 m4 -P '~/.p-init/c/files/docs/source/api/api-index.rst.m4' > 'docs/source/api/api-index.rst.m4'
 
-### Travis CI
-# We run unit tests ourselves before commiting. The CI server then runs these tests against a clean build of the entire project
-# This step should be done when we have a project specific component
-cp ~/.p-init/c/travis_ci/.travis.yml . 
-
 ### General
 m4 -P ~/.p-init/c/git/LICENSE.md.m4 > LICENSE.md
 cp ~/.p-init/c/git/LICENSE-docs.md > LICENSE-docs.md
@@ -74,3 +69,12 @@ m4 -P ~/.p-init/c/git/_config.yml.m4 >> _config.yml # for github pages jekyll th
 
 ### Git ignore
 cp ~/.p-init/c/git/.gitignore . 
+
+### Travis CI
+# We run unit tests ourselves before commiting. The CI server then runs these tests against a clean build of the entire project
+# This step should be done when we have a project specific component
+cp ~/.p-init/c/travis_ci/.travis.yml . 
+
+### Take screenshot of program
+# sleep 10; maim project_preview_screenshot.png
+
