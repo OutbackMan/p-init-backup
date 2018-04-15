@@ -1,5 +1,5 @@
 #: Author       "Russell Coight" <rj.coight@gmail.com>
-#: Description  General C-based project cmake configuration
+#: Description  General C-based project configuration supporting CMake, CTest and CPack.
 #: Usage        
 #::   mkdir build/ && cd build/ && cmake .. 
 #::   ctest <name>
