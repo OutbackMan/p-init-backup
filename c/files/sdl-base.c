@@ -137,6 +137,8 @@ INTERNAL STATUS_CODE game_start(const unsigned game_width, const unsigned game_h
 		goto __exit;
 	}
 
+	// Append compiler and architecture info to window title, e.g.
+	// SDL_SetWindowTitle(window, "GAME [gcc-4.9.2 - x86/64] - 35fps")
 	game_window = SDL_CreateWindow("game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 									game_width, game_height, SDL_WINDOW_RESIZABLE);
 	
@@ -361,6 +363,8 @@ game {
 // cycles may be from other processes due to the CPU swapping
 // may downclock or upclock itself
 // only indicative of how much work CPU did
+
+// require SDL_ttf for outputting numbers, text, etc. (check unicode support)
 int main(int argc, char* argv[argc + 1])
 {
 	const unsigned GAME_WIDTH = 640;
@@ -377,11 +381,19 @@ int main(int argc, char* argv[argc + 1])
 	uint64_t last_counter = SDL_GetPerformanceCounter();
 	uint64_t end_counter = 0;
 	
+	uint64_t last_cycle_count = __rdtsc();
+
 	while (game_is_running(&game)) {
 		game_handle_events();
 		
 		game_update();
 		
+		// with semi-fixed we are simulating the logic of frames,
+		// so we technically still have the same fps as in fixed
+
+		uint64_t end_cycle_count = __rtdsc();
+		uint64_t mega_cycles_elapsed = (end_cycle_count - last_cycle_count) / 1000 * 1000;
+
 		end_counter = SDL_GetPerformanceQuery();
 
 		uint64_t counter_elapsed = end_counter - last_counter;
@@ -392,8 +404,13 @@ int main(int argc, char* argv[argc + 1])
 		uint64_t fps = (counter_frequency / counter_elapsed);
 
 		last_counter = end_counter;
+		last_cycle_count = end_cycle_count;
 	}
 
 	game_exit();
 }
 
+// src/linux/
+// include/unix/
+// #ifdef LINUX #include "unix/"
+// ensure functions have same interface
