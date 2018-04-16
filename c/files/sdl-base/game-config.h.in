@@ -1,0 +1,4 @@
+// will define if set to truthy value
+#cmakedefine GAME_ARCH "@GAME_ARCH@"
+#cmakedefine GAME_ARCH_SUPPORT "@GAME_ARCH_SUPPORT@"
+
