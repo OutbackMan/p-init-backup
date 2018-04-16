@@ -16,9 +16,26 @@ project(
 )
 
 ## COMPILER CONFIGURATION
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
+	# determine ARCH with supported compiler macros
+	execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpmachine
+		OUTPUT_VARIABLE NAME_ARCH
+	)
 
-endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+	### GCC SPECIFIC
+	if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+	
+	### CLANG SPECIFIC
+	else ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+	
+	endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+	
+	
+endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
+
+if ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
+
+endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 
 ## OPTION CONFIGURATION
 
@@ -58,10 +75,6 @@ configure_file(
 
 # enable_language(ASM_MASM)
 # properties and caches for access in subdirectories
-
-execute_process(COMMAND ${CMAKE_C_COPILER} -dumpmachine
-	OUTPUT_VARIABLE GCC_MACHINE
-) # same for clang
 
 # windows
 # execute_process(COMMAND SET Process OUTPUT_VARIABLE WINDOWS_MACHINE) 
