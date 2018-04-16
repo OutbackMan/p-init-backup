@@ -45,18 +45,16 @@ enum {
     SURFACE_FAILURE_CODE = 4,
 };
 
-INTERNAL void game_quit(STATUS_CODE game_exit_code)
+INTERNAL STATUS_CODE game__set_surface_pixel_colour(SDL_Surface* game_surface, int x, int y, SDL_Color* colour)
 {
-	SDL_Quit();
-	exit(game_exit_code);
-}
+	if (ASSERT_IF(game_surface != NULL && colour != NULL, "Null parameters")) {
+		return INVALID_ARGUMENTS; 	
+	}
 
-INTERNAL void game__set_surface_pixel_colour(SDL_Surface* game_surface, int x, int y, SDL_Color* colour)
-{
 	if (SDL_MUSTLOCK(game_surface)) {
 		if (SDL_LockSurface(game_surface) < 0) {
 			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to lock game surface: %s\n", SDL_GetError());	
-			game_quit(SURFACE_FAILURE_CODE);
+			return SURFACE_FAILURE_CODE;
 		}
 	}
 
@@ -67,6 +65,8 @@ INTERNAL void game__set_surface_pixel_colour(SDL_Surface* game_surface, int x, i
 	if (SDL_MUSTLOCK(game_surface)) {
 		SDL_UnlockSurface(game_surface);		
 	}
+
+	return SUCCESS_CODE;
 }
 
 // consider offsetting so as to highlight border, e.g: (y + 2) * width + (x + 2)
@@ -179,6 +179,11 @@ INTERNAL STATUS_CODE game_start(const unsigned game_width, const unsigned game_h
 	}
 
 	bool game_is_running = true;
+
+	int current_piece = 0;
+	int current_rotation = 0;
+	int current_x = FIELD_WIDTH / 2;
+	int current_y = 0;
 
 	while (game_is_running) {
 		SDL_Event event = {0};
@@ -318,16 +323,50 @@ int tetromino_rotate(int original_x_index, int original_y_index, int angle_index
 	return 0;
 }
 
-bool does_tetromino_fit(int tetromino_id, int rotation, int x, int y)
+bool does_tetromino_fit(int tetromino_id, int current_rotation, int top_x, int top_y)
 {
+	// texture size
+	// texture colour information, i.e. what colour its 'body' is
+	// SDL_Colour comparison
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			int index = tetromino_rotate(i, j, current_rotation);	
+			int field_index = (top_y + j) * FIELD_WIDTH + (top_x + i);
+
+			if (i + top_x >= 0 && i + top_x < FIELD_WIDTH) {
+				if (j + top_y >= 0 && j + top_y < FIELD_HEIGHT) {
+					if (tetromino[tetromino_id][index] == PIECE_COLOUR && field[index] != BG) {
+						return false;
+					}
+				}		
+			}
+		}		
+	}
+
 	return true;	
 }
 
+// cross platform coverage, profiler
+// 1. ASSETS: items, map
 
 int main(int argc, char* argv[argc + 1])
 {
 	const unsigned GAME_WIDTH = 640;
 	const unsigned GAME_HEIGHT = 480;
+
+	Game game = {0};
+
+	game_init(&game, title, width, height);
+
+	game_start(&game);
+	
+	while (game_is_running(&game)) {
+		game_handle_events();
+		
+		game_update();
+	}
+
+	game_exit();
 
 	if (game_start(GAME_WIDTH, GAME_HEIGHT) != SUCCESS_CODE) {
 		return EXIT_FAILURE;
