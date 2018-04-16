@@ -17,6 +17,41 @@ project(
 
 ## COMPILER CONFIGURATION
 
+## OPTION CONFIGURATION
+
+## FILE CONFIGURATION
+
+
+##################################
+## CTEST CONFIGURATION
+##################################
+enable_testing()
+
+
+##################################
+## CPACK CONFIGURATION
+##################################
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_NAME "name")
+set(CPACK_PACKAGE_VENDOR "Ryan McClue")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Example")
+set(CPACK_PACKAGE_VERSION "1.0.0") # version of installer
+set(CPACK_RESOURCE_FILE_LICENSE  
+     "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "ExampleDir")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icon.ico")
+include(CPack)
+include(CPackIFW)
+
+target_include_directories(name PUBLIC
+	"${name_SOURCE_DIR}/include"
+)
+
+configure_file(
+	"${name_SOURCE_DIR}/include/config.h.in"
+)
+
+
 
 # enable_language(ASM_MASM)
 # properties and caches for access in subdirectories
