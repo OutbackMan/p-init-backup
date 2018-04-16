@@ -346,9 +346,21 @@ bool does_tetromino_fit(int tetromino_id, int current_rotation, int top_x, int t
 	return true;	
 }
 
-// cross platform coverage, profiler
+// cross platform coverage (codecov), profiler (easy profiler)
 // 1. ASSETS: items, map
 
+/*
+game {
+	window, renderer, is_running,
+	assets(map, tetromino) // can scale further if necessary
+}
+*/
+
+
+// ISA from intel architecture reference
+// cycles may be from other processes due to the CPU swapping
+// may downclock or upclock itself
+// only indicative of how much work CPU did
 int main(int argc, char* argv[argc + 1])
 {
 	const unsigned GAME_WIDTH = 640;
@@ -359,19 +371,29 @@ int main(int argc, char* argv[argc + 1])
 	game_init(&game, title, width, height);
 
 	game_start(&game);
+
+	// how many counter increments per second
+	uint64_t counter_frequency = SDL_GetPerformanceFrequency();
+	uint64_t last_counter = SDL_GetPerformanceCounter();
+	uint64_t end_counter = 0;
 	
 	while (game_is_running(&game)) {
 		game_handle_events();
 		
 		game_update();
+		
+		end_counter = SDL_GetPerformanceQuery();
+
+		uint64_t counter_elapsed = end_counter - last_counter;
+
+		// multiplying by 1000 prevents result truncation to 0
+		uint64_t ms_per_frame = (1000 * counter_elapsed) / counter_frequency;
+		// dimensional analysis
+		uint64_t fps = (counter_frequency / counter_elapsed);
+
+		last_counter = end_counter;
 	}
 
 	game_exit();
-
-	if (game_start(GAME_WIDTH, GAME_HEIGHT) != SUCCESS_CODE) {
-		return EXIT_FAILURE;
-	} else {
-		return EXIT_SUCCESS;
-	}
 }
 
