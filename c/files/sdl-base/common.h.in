@@ -85,6 +85,7 @@ License:
  * COMPILER EXTENSIONS
  *****************************************************************************/
 #if defined(__GNUC__) || defined(__llvm__) 
+#include <x86initrn.h> // for __rdtsc()
 #define GAME_ALIGN
 #define GAME_PURE __attribute__((pure))
 #define GAME_CONST __attribute__((const))

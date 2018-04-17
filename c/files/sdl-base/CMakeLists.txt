@@ -17,10 +17,19 @@
 # this occurs out of order, to prevent latency from instructions depending on others
 # issuing the instruction begins a pipeline, whereby each instruction is executed in stages. Each stage completes part of an instruction in parallel.
 # this is to allow units to be free earlier
+# instructions only care about throughput as we assume we are operating on many things at once so latency becomes less important.
 
-# for every instruction, we woud like to know what the latency (time from issue to completion) and throughput (how many can be done if pipelined) is.
+# for every instruction, we would like to know what the latency (time from issue to completion) and throughput (how many can be done if pipelined) is.
+# always care about memory bandwidth/throughput, i.e how much memory moved on bus to cpu
+# prefetch to avoid cache misses which are costly due to memory latency (hyperthreading can also be used, i.e. swap between logical threads)
+# so, small code size for i-cache
+# high cache coherency
+# know instruction stream to utilise pipelining
 
 # 1. work out how many cycles we have to maintain frame rate (1 core, 1 cpu). In actuality, a 4 core cpu will each have the same clock speed.
+# 2. gather statistics
+# 3. make estimate regarding how fast it should be running
+# 4. analyze efficiency and performance
 
 ##################################
 ## CMAKE CONFIGURATION
@@ -127,10 +136,12 @@ configure_file(
 	"${name_SOURCE_DIR}/include/config.h.in"
 )
 
+# set CMAKE_PREFIX_PATH appropriatley.
+find_package(easy_profiler REQUIRED)
+target_link_libraries(name easy_profiler)
+# refer to easy_profiler github readme to compile with msvc not using visual studio
 
 
 # enable_language(ASM_MASM)
 # properties and caches for access in subdirectories
-
-# windows
 
