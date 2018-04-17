@@ -140,6 +140,7 @@ configure_file(
 find_package(easy_profiler REQUIRED)
 target_link_libraries(name easy_profiler)
 # refer to easy_profiler github readme to compile with msvc not using visual studio
+# for actual profiler use remotery
 
 
 # enable_language(ASM_MASM)
