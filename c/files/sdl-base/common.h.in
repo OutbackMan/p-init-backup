@@ -1,0 +1,90 @@
+#ifndef __common_h__
+#define __common_h__
+
+#include <stdbool.h>
+
+/******************************************************************************
+ * UTILITY MACROS
+ *****************************************************************************/
+#define GAME_TO_STRING(val)	#val
+#define GAME_STRINGIFY(str)	GAME_TO_STRING(str)
+
+/******************************************************************************
+ * COMPILER VERSION DETECTION 
+ *****************************************************************************/
+#if defined(__GNUC__)
+#define GAME_COMPILER "gcc-"GAME_STRINGIFY(__GNUC__)"." \
+	GAME_STRINGIFY(__GNUC_MINOR__)"." \
+	GAME_STRINGIFY(__GNUC_PATCHLEVEL__)
+#elif defined(__llvm__)
+#define GAME_COMPILER "llvm-"GAME_STRINGIFY(__clang_major__)"." \
+		GAME_STRINGIFY(__clang_minor__)"." \
+		GAME_STRINGIFY(__clang_patchlevel__)
+#elif defined(_MSC_VER)
+// check what versions appveyor supports
+#if _MSC_VER <= 1200
+#define GAME_COMPILER "MSVC 6.0"
+#elif _MSC_VER <= 1300
+#define GAME_COMPILER "MSVC 7.0"
+#elif _MSC_VER <= 1310
+#define GAME_COMPILER "MSVC 7.1"
+#elif _MSC_VER <= 1400
+#define GAME_COMPILER "MSVC 8.0"
+#elif _MSC_VER <= 1500
+#define GAME_COMPILER "MSVC 9.0"
+#elif _MSC_VER <= 1600
+#define GAME_COMPILER "MSVC 2010"
+#elif _MSC_VER <= 1700
+#define GAME_COMPILER "MSVC 2012"
+#elif _MSC_VER <= 1800
+#define GAME_COMPILER "MSVC 2013"
+#elif _MSC_VER <= 1900
+#define GAME_COMPILER "MSVC 2015"
+#elif _MSC_VER <= 1912
+#define GAME_COMPILER "MSVC 2017"
+#elif defined(__EMSCRIPTEN__)
+#define GAME_COMPILER "emscripten-"GAME_STRINGIFY(__EMSCRIPTEN_major__)"." \
+	GAME_STRINGIFY(__EMSCRIPTEN_minor__)"." \
+	GAME_STRINGIFY(__EMSCRIPTEN_tiny__)
+#elif defined(__MINGW32__)
+#define GAME_COMPILER "mingw32-"GAME_STRINGIFY(__MINGW32_MAJOR_VERSION__)"." \
+	GAME_STRINGIFY(__MINGW32_MINOR_VERSION__)
+#elif defined(__MINGW64__)
+#define GAME_COMPILER "mingw64-"GAME_STRINGIFY(__MINGW64_MAJOR_VERSION__)"." \
+	GAME_STRINGIFY(__MINGW64_MINOR_VERSION__)
+#else
+#define GAME_COMPILER "Unknown"
+#endif
+
+#if defined(__GNUC__) || defined(__llvm__)
+
+#define inline __inline
+#define restrict __restrict
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#ifdef GAME_IN_DEBUG_MODE
+static inline bool GAME_ASSERT_IF(const bool condition)
+{
+	return !condition;	
+}
+#else
+static inline bool GAME_ASSERT_IF(const bool condition) {
+	;	
+}
+#endif
+
+static inline bool GAME_IMPLIES(const bool truth, const bool implication)
+{
+	return (!truth || implication);	
+}
+
+static inline int GAME_INT_MAX(const int x, const int y)
+{
+	return (x > y ? x : y);
+}
+
+#cmakedefine GAME_ARCH "@GAME_ARCH@"
+#cmakedefine GAME_ARCH_SUPPORT "@GAME_ARCH_SUPPORT@"
+
+#endif
