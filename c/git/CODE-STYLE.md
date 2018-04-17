@@ -41,8 +41,9 @@ src/utils/misc/logger.c
 * Drop in or static 3rd party libraries are to be located in a `lib/` directory. They are exempt from the aforementioned rules regarding `include/` and `src/` directories.
 For example:
 ```bash
-lib/argtable3/argtable.h
-lib/argtable3/argtable.c
+# Cross Platform C Profiler - https://github.com/Celtoys/Remotery
+lib/remotery/Remotery.h
+lib/remotery/Remotery.c
 ```
 ### Formatting
 * 4 spaces to indent, not tabs. 

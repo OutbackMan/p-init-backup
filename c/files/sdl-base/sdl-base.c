@@ -138,7 +138,7 @@ INTERNAL STATUS_CODE game_start(const unsigned game_width, const unsigned game_h
 	}
 
 	// Append compiler and architecture info to window title, e.g.
-	// SDL_SetWindowTitle(window, "GAME [gcc-4.9.2 - x86/64] - 35fps")
+	// SDL_SetWindowTitle(window, "GAME [gcc-4.9.2 - x86/64](DEBUG) - 35fps")
 	game_window = SDL_CreateWindow("game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 									game_width, game_height, SDL_WINDOW_RESIZABLE);
 	

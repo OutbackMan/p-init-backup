@@ -31,6 +31,11 @@
 # 3. make estimate regarding how fast it should be running
 # 4. analyze efficiency and performance
 
+# 1. remove unecessary code
+# 2. focus on on most time spent
+# 3. replace function calls with inline
+# 4. smarter ways of doing things
+
 ##################################
 ## CMAKE CONFIGURATION
 ##################################
@@ -50,6 +55,7 @@ else ()
 
 endif ()
 
+# add flags for profiling
 set(CMAKE_C_FLAGS_DEBUG "-ggdb3 -g3 -O0")
 set(CMAKE_C_FLAGS_MINSIZEREL "-Os -ffast-math -DNDEBUG -s -fmerge-all-constants")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -ffast-math -DNDEBUG -ggdb3 -g3 -fmerge-all-constants")
@@ -137,11 +143,11 @@ configure_file(
 )
 
 # set CMAKE_PREFIX_PATH appropriatley.
+# unfortunately cannot do code coverage
 find_package(easy_profiler REQUIRED)
 target_link_libraries(name easy_profiler)
 # refer to easy_profiler github readme to compile with msvc not using visual studio
-# for actual profiler use remotery
-
+# for actual profiler use remotery. remotery is only useful if program has a 'main-loop'.
 
 # enable_language(ASM_MASM)
 # properties and caches for access in subdirectories
