@@ -45,12 +45,19 @@ License:
 		GAME_STRINGIFY(__clang_minor__)"." \
 		GAME_STRINGIFY(__clang_patchlevel__)
 #elif defined(_MSC_VER)
-#if _MSC_VER <= 1800
+#if _MSC_VER <= 1500
+#define GAME_COMPILER "MSVC 2008"
+#elif _MSC_VER <= 1600
+#define GAME_COMPILER "MSVC 2010"
+#elif _MSC_VER <= 1700
+#define GAME_COMPILER "MSVC 2012"
+#elif _MSC_VER <= 1800
 #define GAME_COMPILER "MSVC 2013"
 #elif _MSC_VER <= 1900
 #define GAME_COMPILER "MSVC 2015"
 #elif _MSC_VER <= 1912
 #define GAME_COMPILER "MSVC 2017"
+#endif
 #elif defined(__EMSCRIPTEN__)
 #define GAME_COMPILER "emscripten-"GAME_STRINGIFY(__EMSCRIPTEN_major__)"." \
 	GAME_STRINGIFY(__EMSCRIPTEN_minor__)"." \
