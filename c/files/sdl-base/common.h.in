@@ -1,8 +1,8 @@
 /*******************************************************************************
 
-Copyright (C) 2018, Ryan McClue
+Copyright (C) 2018, @GAME_CREATOR@
 
-common.h: 
+@CONFIGURE_FILE_NAME@: 
 	"Common macro definitions."
 
 GAME:
@@ -25,6 +25,12 @@ License:
 
 #define GAME_TO_STRING(val)	#val
 #define GAME_STRINGIFY(str)	GAME_TO_STRING(str)
+
+#define GAME_LEAVE(func_exit_code) \
+	do { \
+		exit_code = func_exit_code; \
+		goto __exit; \
+	} while (0);
 
 /******************************************************************************
  * COMPILER VERSION DETECTION 
@@ -108,21 +114,29 @@ License:
  * DEBUG ONLY DEFINITIONS
  *****************************************************************************/
 
-#ifdef GAME_IN_DEBUG_MODE
+#if defined(GAME_IN_DEBUG_MODE)
 static inline bool GAME_ASSERT_IF(const bool condition)
 {
 	return !condition;	
 }
-#else
-static inline bool GAME_ASSERT_IF(const bool condition) {
-	;	
-}
-#endif
 
 static inline bool GAME_IMPLIES(const bool truth, const bool implication)
 {
 	return (!truth || implication);	
 }
+#else
+static inline bool GAME_ASSERT_IF(const bool condition) {
+	;	
+}
+static inline bool GAME_IMPLIES(const bool truth, const bool implication)
+{
+	;
+}
+#endif
+
+/******************************************************************************
+ * UTILITY FUNCTIONS
+ *****************************************************************************/
 
 static inline int GAME_INT_MAX(const int x, const int y)
 {
@@ -133,6 +147,10 @@ static inline int GAME_INT_MAX(const int x, const int y)
  * CMAKE DEFINITIONS
  *****************************************************************************/
 
+#cmakedefine GAME_VERSION "@GAME_VERSION@"
+#cmakedefine GAME_BUGREPORT_ADDRESS "@GAME_BUGREPORT_ADDRESS@"
+#cmakedefine GAME_NAME "@GAME_NAME@"
+#cmakedefine GAME_AUTHOR "@GAME_CREATOR@"
 #cmakedefine GAME_ARCH "@GAME_ARCH@"
 #cmakedefine GAME_ARCH_SUPPORT "@GAME_ARCH_SUPPORT@"
 
