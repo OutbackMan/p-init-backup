@@ -68,7 +68,17 @@ project(
   LANGUAGES C
 )
 
-set(CMAKE_MODULE_PATH "${name_SOURCE_DIR}/cmake")
+# also have cmake/toolchains
+list(INSERT CMAKE_MODULE_PATH 0 "${name_SOURCE_DIR}/cmake/modules")
+
+# This will call check for sse and avx
+# hideo55, volk, vc
+include(GameBuildTypes)
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "Debug")
+	message(STATUS "Build type not specified, defaulting to Debug")
+endif()
+
 
 # execute_process(COMMAND SET Process OUTPUT_VARIABLE WINDOWS_MACHINE) 
 if (${GCC_MACHINE} MATCHES "x86.*")
@@ -147,6 +157,7 @@ enable_testing()
 ##################################
 ## CPACK CONFIGURATION
 ##################################
+# May have to consider handling uninstall
 include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_NAME "name")
 set(CPACK_PACKAGE_VENDOR "Ryan McClue")
