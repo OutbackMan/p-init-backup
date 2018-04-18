@@ -6,7 +6,7 @@ git:
 branches:
   only:
     - master
-	- release
+    - release
 
 notifications:
   email: false
@@ -16,12 +16,7 @@ notifications:
 	  on_success: always
 	  on_failure: always
 
-ref:
-  game_dependency_manager: &game_dependency_manager
-    - sudo apt-get -qq update
-	- sudo apt-get install -y libsdl2-dev
-	- sudo apt-get install -y llibsdl-ttf2.0.0-dev
-	- sudo apt-get install -y llibsdl-image2.0.0-dev
+# libsdl-ttf2.0.0-dev, llibsdl-image2.0.0-dev
 
 matrix:
   include:
@@ -34,8 +29,11 @@ matrix:
 		    - ubuntu-toolchain-r-test
           packages:
 		    - gcc-4.9
-	  env:
-	    - MATRIX_EVAL="CC=gcc-4.9"
+				- libsdl2-dev
+		script:
+	    - cmake .
+      - cmake --build . -- -j2
+      - ctest -j2
 
     - language: c 
 	  compiler: gcc
@@ -185,10 +183,5 @@ matrix:
 	    - docker exec -it emscripten cmake .
 		- cmake --build . -- -j2 
 
-before_install: *game_dependency_manager
-  - eval "${MATRIX_EVAL}"
-
 script:
-  - cmake .
-  - cmake --build . -- -j2
-  - ctest -j2
+
