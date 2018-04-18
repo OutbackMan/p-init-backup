@@ -66,12 +66,30 @@ __m128 sum = __mm_add_ps(value_a, value_b);
 ##################################
 ## CMAKE CONFIGURATION
 ##################################
-cmake_minimum_required(2.8 FATAL_ERROR)
+cmake_minimum_required(3.0 FATAL_ERROR)
+
+if(CMAKE_SOURCE_DIR STREQEUAL CMAKE_BINARY_DIR)
+  message(FATAL_ERROR "Please don't configure in source directory!")
+endif()
+
 project(
   name
   VERSION 0.0.1
   LANGUAGES C
 )
+
+# also have cmake/toolchains
+list(INSERT CMAKE_MODULE_PATH 0 "${name_SOURCE_DIR}/cmake/modules")
+
+# This will call check for sse and avx
+# hideo55, volk, vc
+include(GameBuildTypes)
+if(NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "Debug")
+	message(STATUS "Build type not specified, defaulting to Debug")
+endif()
+
+
 # execute_process(COMMAND SET Process OUTPUT_VARIABLE WINDOWS_MACHINE) 
 if (${GCC_MACHINE} MATCHES "x86.*")
 	# Set ARCH_SUPPORT to Native, SSE, AVX, etc
@@ -149,6 +167,7 @@ enable_testing()
 ##################################
 ## CPACK CONFIGURATION
 ##################################
+# May have to consider handling uninstall
 include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_NAME "name")
 set(CPACK_PACKAGE_VENDOR "Ryan McClue")
