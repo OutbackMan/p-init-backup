@@ -6,7 +6,7 @@
 #::   cpack <name>
 
 # The data in the instruction like float x = y + 3; will be replicated a minimum of 4 times, and only one will be kept.
-# This is due to SIMD. (SSE, AVX are 4 wide. This layout can waste pixels if iterating sequentially)
+# This is due to SIMD. (SSE, SSE2 (more registers) and AVX are 4 wide. This layout can waste pixels if iterating sequentially)
 # The effort to decode instruction stream and decide how to operate on it, e.g can instructions be executed in parallel, i.e. pipelined,
 # what circuits are available to use etc.
 
@@ -15,17 +15,27 @@ struct Color {
 }
 
 # SOA preferred for loading into SIMD register as intel doesn't support strided loading, e.g. load every 4th byte
-struct Color {
+struct Colors {
 	int* r;	
 	int* g;	
 	int* b;	
 	int* a;	
 }
 # obtain SSE instructions from intel intrinsics (rotate integer)
-emmintrin.h
+# very hard for compiler to do this automatically
+# iterate over pixels in 4
+<emmintrin.h>
+__m128 inv = __mm_set1_ps(1.0f / 255.0f);
+
+__m128 value_test = __mm_setzero_ps();
 __m128 value_a = __mm_set1_ps(1.0f); # set all 4 lanes to 1
 __m128 value_b = __mm_set1_ps(2.0f);
-__m128 sum = __mm_sum_ps(value_a, value_b);
+
+__m128 value_a = __mm_set_ps(1.0f, 2.0f, 3.0f, 4.0f);
+__m128 value_b = __mm_set_ps(10.0f, 11.0f, 12.0f, 13.0f);
+
+__m128 sum = __mm_add_ps(value_a, value_b);
+# separate loop into smaller loops, one for memory loading, computation and finalisation.
 
 # cpu will copy from memory->cache->registers, then registers->cache->memory
 # cycle is the smallest unit of time for a CPU. L1, L2, L3 increasing cycle access count.
