@@ -1,33 +1,89 @@
-# We want fast container based execution
-sudo: false
+os:
+  - linux
+  - osx
+
 language: c
 
-# Just look at online dashboard
-notifications:
-  email: false
+dist: trusty
 
-# Override typical 50 depth clone
+# linux (gcc, clang)
+
+# macosx (gcc, clang)
+# https://docs.travis-ci.com/user/reference/osx/
+# https://gist.github.com/yamaya/2924292
+
+# emscripten
+
+matrix:
+  include:
+    - os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+          packages:
+		    - gcc-4.9
+	  env:
+	    - MATRIX_EVAL="CC=gcc-4.9"
+
+	- os: osx
+	  osx_image: xcode8 # determines version of clang
+	  env:
+	    - MATRIX_EVAL="brew install gcc4.9 && CC=gcc-4.9"
+
+	- os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-precise-3.6
+		  packages:
+		    - clang-3.6
+	  env:
+	    - MATRIX_EVAL="CC=clang3.6"
+
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+
+script:
+  - gcc 
+
+compiler:
+  - gcc
+  - clang
+
+addons:
+  apt:
+    packages:
+	  - sdl2
+
+before_install:
+  - if [["${TRAVIS_OS_NAME}" == "osx"]]; then
+	  brew update;
+	  brew install sdl2
+	  brew link 
+    fi
+
 git:
   depth: 1
 
 branches:
-  except:
-    - master
-    - /^release\/.*$/
-
-branches:
   only:
-    - develop
-    - /^feature\/.*$/
-    - /^hotfix\/.*$/
+    - master
+	- release
+
+notifications:
+  email: false
+  webhooks:
+    urls:
+	  - https://www.webhooks.gitter.im
+	  on_success: always
+	  on_failure: always
 
 matrix:
-  fast_finish: true
-
   include:
-	- os: linux
-      dist: trusty
-	  compiler: gcc-5
+	- compiler: gcc-5
 	  addons:
 	    apt:
 		  # Add ppa to allow for unverified libraries

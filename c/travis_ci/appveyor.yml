@@ -1,4 +1,4 @@
-# circle ci for android
+# circle ci for android and ios
 
 version: "1.0.{build}"
 
