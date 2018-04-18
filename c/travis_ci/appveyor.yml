@@ -1,8 +1,66 @@
+# circle ci for android
+
+version: "1.0.{build}"
+
+configuration: "Release"
+
+platform: "x64"
+
+# Only bother with release versions
+branches:
+  only:
+    - master
+	- release
+
+os: "Visual Studio 2017"
+
+shallow_copy: "true"
+clone_depth: "1"
+
+notifications:
+  - provider: "Webhooks"
+    url: "gitter appveyor integration link"
+	on_build_success: "true"
+	on_build_failure: "true"
+	on_build_status_changed: "true"
+
+environment:
+  matrix:
+	- CMAKE_ARGS:
+	PREFIX: c:/project_msvc
+	MSVC:
+	# This allows conditional dependency handling
+	MINGW32: rem
+	# MSYS2
+	MINGWW64: rem
+
+  before_build:
+	- cmd: if exists %PREFIX% set NEEDSDEPENDS=rem
+
+	# General dependencies
+	- cmd: >-
+	%NEEDSDEPENDS% mkdir %PREFIX%\include\SDL2
+	%NEEDSDEPENDS% cd %TEMP% # appdata\temp
+
+
+
+    fast_finish: "true"
+
+
+
+# build matrix to specify series of constituent jobs
+
+# set environment variables after cloning
+environment:
+  variable1: value
+
 image:
   - Visual Studio 2017
 clone_folder: c:\projects\source
+# cmd to specify using windows cmd instead of powershell
 build_script:
 - cmd: >-
+  set MY_VARIABLE=value # access %MY_VARIABLE%
   mkdir build
   
   cd build
