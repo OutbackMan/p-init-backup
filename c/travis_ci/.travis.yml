@@ -1,77 +1,5 @@
 dist: trusty
 
-# linux (gcc, clang)
-
-# macosx (gcc, clang)
-# https://docs.travis-ci.com/user/reference/osx/
-# https://gist.github.com/yamaya/2924292
-
-# emscripten
-
-matrix:
-  include:
-    - language: c 
-	  os: linux
-	  addons:
-	    apt:
-		  sources:
-		    - ubuntu-toolchain-r-test
-          packages:
-		    - gcc-4.9
-			- libsdl2-dev
-			- libsdl-ttf2.0.0-dev
-			- libsdl-image2.0.0-dev
-	  env:
-	    - MATRIX_EVAL="CC=gcc-4.9"
-
-	- os: osx
-	  osx_image: xcode8 # determines version of clang and cmake
-	  env:
-	    - MATRIX_EVAL="brew install gcc4.9 && CC=gcc-4.9"
-
-	- os: linux
-	  addons:
-	    apt:
-		  sources:
-		    - ubuntu-toolchain-r-test
-			- llvm-toolchain-precise-3.6
-		  packages:
-		    - clang-3.6
-	  env:
-	    - MATRIX_EVAL="CC=clang3.6"
-
-	- language: node_js
-	  node_js: 
-	    - node
-	  services: 
-	    - docker
-	  env:
-	    - MATRIX_EVAL=""
-		# perhaps define another for 'script' stage
-
-
-before_install:
-  - eval "${MATRIX_EVAL}"
-
-script:
-  - gcc 
-
-compiler:
-  - gcc
-  - clang
-
-addons:
-  apt:
-    packages:
-	  - sdl2
-
-before_install:
-  - if [["${TRAVIS_OS_NAME}" == "osx"]]; then
-	  brew update;
-	  brew install sdl2
-	  brew link 
-    fi
-
 git:
   depth: 1
 
@@ -88,49 +16,179 @@ notifications:
 	  on_success: always
 	  on_failure: always
 
+ref:
+  game_dependency_manager: &game_dependency_manager
+    - sudo apt-get -qq update
+	- sudo apt-get install -y libsdl2-dev
+	- sudo apt-get install -y llibsdl-ttf2.0.0-dev
+	- sudo apt-get install -y llibsdl-image2.0.0-dev
+
 matrix:
   include:
-	- compiler: gcc-5
+    - language: c 
+	  compiler: gcc
+	  os: linux
 	  addons:
 	    apt:
-		  # Add ppa to allow for unverified libraries
-		  sources: 
+		  sources:
 		    - ubuntu-toolchain-r-test
-		  packages:
-		    - time
-	  script:
-	    - CC=/usr/bin/gcc-5 cmake .
-	    - cmake --build . -- -j2
-	    - ctest -j2
-		 
-  include:
-	- os: linux
-      dist: trusty
-	  compiler: gcc-6
-	  addons:
-	    apt:
-		  sources: 
-		    - ubuntu-toolchain-r-test
-		  packages:
-		    - time
-	  script: \
-	    autoreconf -i && \
-		cd build/ && ../configure && \
-		make && \
-		make check
+          packages:
+		    - gcc-4.9
+	  env:
+	    - MATRIX_EVAL="CC=gcc-4.9"
 
-  include:
-	- os: linux
-      dist: trusty
-	  compiler: gcc-7
+    - language: c 
+	  compiler: gcc
+	  os: linux
 	  addons:
 	    apt:
-		  sources: 
+		  sources:
 		    - ubuntu-toolchain-r-test
-		  packages:
-		    - time
-	  script: \
-	    autoreconf -i && \
-		cd build/ && ../configure && \
-		make && \
-		make check
+          packages:
+		    - gcc-5
+	  env:
+	    - MATRIX_EVAL="CC=gcc-5"
+
+    - language: c 
+	  compiler: gcc
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+          packages:
+		    - gcc-6
+	  env:
+	    - MATRIX_EVAL="CC=gcc-6"
+
+    - language: c 
+	  compiler: gcc
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+          packages:
+		    - gcc-7
+	  env:
+	    - MATRIX_EVAL="CC=gcc-7"
+
+    - language: c 
+	  compiler: clang
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-trusty-6.0
+          packages:
+		    - clang-6.0
+	  env:
+	    - MATRIX_EVAL="CC=clang-6.0"
+
+    - language: c 
+	  compiler: clang
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-trusty-7.0
+          packages:
+		    - clang-7.0 
+	  env:
+	    - MATRIX_EVAL="CC=clang-7.0"
+
+    - language: c 
+	  compiler: clang
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-trusty-8.0
+          packages:
+		    - clang-8.0 
+	  env:
+	    - MATRIX_EVAL="CC=clang-8.0"
+
+    - language: c 
+	  compiler: clang
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-trusty-9.0
+          packages:
+		    - clang-9.0 
+	  env:
+	    - MATRIX_EVAL="CC=clang-9.0"
+
+	- language: c
+	  compiler: clang
+	  os: osx
+	  osx_image: xcode6.4 
+
+	- language: c
+	  compiler: clang
+	  os: osx
+	  osx_image: xcode7.3 
+
+	- language: c
+	  compiler: clang
+	  os: osx
+	  osx_image: xcode8 
+
+	- language: c
+	  compiler: clang
+	  os: osx
+	  osx_image: xcode9 
+
+	- language: c
+	  compiler: gcc
+	  os: osx
+	  osx_image: xcode8
+	  env:
+	    - MATRIX_EVAL="brew install gcc-4.9 && CC=gcc-4.9"
+
+	- language: c
+	  compiler: gcc
+	  os: osx
+	  osx_image: xcode8
+	  env:
+	    - MATRIX_EVAL="brew install gcc-5 && CC=gcc-5"
+
+	- language: c
+	  compiler: gcc
+	  os: osx
+	  osx_image: xcode8
+	  env:
+	    - MATRIX_EVAL="brew install gcc-6 && CC=gcc-6"
+
+	- language: c
+	  compiler: gcc
+	  os: osx
+	  osx_image: xcode8
+	  env:
+	    - MATRIX_EVAL="brew install gcc-7 && CC=gcc-7"
+
+	- sudo: required 
+	  language: node_js
+	  node_js: 
+	    - node
+	  services: 
+	    - docker
+	  before_install:
+		- docker run -dit --name emscripten -v $(pwd):/src trzeci/emscripten:sdk-incoming-64bit bash 
+	  script:
+	    - docker exec -it emscripten cmake .
+		- cmake --build . -- -j2 
+
+before_install: *game_dependency_manager
+  - eval "${MATRIX_EVAL}"
+
+script:
+  - cmake .
+  - cmake --build . -- -j2
+  - ctest -j2
