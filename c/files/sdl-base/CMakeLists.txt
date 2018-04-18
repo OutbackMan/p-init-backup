@@ -56,12 +56,20 @@ __m128 sum = __mm_sum_ps(value_a, value_b);
 ##################################
 ## CMAKE CONFIGURATION
 ##################################
-cmake_minimum_required(2.8 FATAL_ERROR)
+cmake_minimum_required(3.0 FATAL_ERROR)
+
+if(CMAKE_SOURCE_DIR STREQEUAL CMAKE_BINARY_DIR)
+  message(FATAL_ERROR "Please don't configure in source directory!")
+endif()
+
 project(
   name
   VERSION 0.0.1
   LANGUAGES C
 )
+
+set(CMAKE_MODULE_PATH "${name_SOURCE_DIR}/cmake")
+
 # execute_process(COMMAND SET Process OUTPUT_VARIABLE WINDOWS_MACHINE) 
 if (${GCC_MACHINE} MATCHES "x86.*")
 	# Set ARCH_SUPPORT to Native, SSE, AVX, etc
