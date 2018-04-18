@@ -6,9 +6,26 @@
 #::   cpack <name>
 
 # The data in the instruction like float x = y + 3; will be replicated a minimum of 4 times, and only one will be kept.
-# This is due to SIMD. 
+# This is due to SIMD. (SSE, AVX are 4 wide. This layout can waste pixels if iterating sequentially)
 # The effort to decode instruction stream and decide how to operate on it, e.g can instructions be executed in parallel, i.e. pipelined,
 # what circuits are available to use etc.
+
+struct Color {
+	int r, g, b, a;	
+}
+
+# SOA preferred for loading into SIMD register as intel doesn't support strided loading, e.g. load every 4th byte
+struct Color {
+	int* r;	
+	int* g;	
+	int* b;	
+	int* a;	
+}
+# obtain SSE instructions from intel intrinsics (rotate integer)
+emmintrin.h
+__m128 value_a = __mm_set1_ps(1.0f); # set all 4 lanes to 1
+__m128 value_b = __mm_set1_ps(2.0f);
+__m128 sum = __mm_sum_ps(value_a, value_b);
 
 # cpu will copy from memory->cache->registers, then registers->cache->memory
 # cycle is the smallest unit of time for a CPU. L1, L2, L3 increasing cycle access count.
@@ -30,11 +47,11 @@
 # 2. gather statistics
 # 3. make estimate regarding how fast it should be running
 # 4. analyze efficiency and performance
-
-# 1. remove unecessary code
-# 2. focus on on most time spent
-# 3. replace function calls with inline
-# 4. smarter ways of doing things
+# ----
+# 1. focus in on most time spent
+# 2. remove unecessary code
+# 3. replace function calls with inline code (paste in location to flatten)
+# 4. smarter ways of doing things (precomputing, operations bypassed with if)
 
 ##################################
 ## CMAKE CONFIGURATION
