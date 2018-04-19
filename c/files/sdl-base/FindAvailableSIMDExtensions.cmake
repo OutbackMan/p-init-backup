@@ -37,8 +37,19 @@ function(_parse_simd_extensions cpu_info)
 
 endfunction(_parse_simd_extensions)
 	
+# CPUID Signature Values of Of Recent Intel Microarchitectures
+# skylake: 4E 5E -->
+
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	execute_process(COMMAND "grep 'flags' /proc/cpuinfo" OUTPUT_VARIABLE _cpuinfo)
+	file(READ "/proc/cpuinfo" _cpu_info)
+	string(REGEX MATCH ".*vendor_id[\t]*:[\t]+([a-zA-Z0-9_-]+).*" "\\1" _cpu_vendor _cpu_info)
+	string(REGEX MATCH ".*cpu family[\t]*:[\t]+([a-zA-Z0-9_-]+).*" "\\1" _cpu_architecture_family_id _cpu_info)
+	string(REGEX MATCH ".*model[\t]*:[\t]+([a-zA-Z0-9_-]+).*" "\\1" _cpu_model _cpu_info)
+	string(REGEX MATCH ".*flags[\t]*:[\t]+([a-zA-Z0-9_-]+).*" "\\1" _cpu_flags _cpu_info)
+
+	if(_cpu_vendor STREQUAL "GenuineIntel")
+
+	endif()
 
 	_parse_simd_extensions(_cpuinfo)
 
@@ -53,7 +64,38 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 
 
+# refer to Intel SDM (software developers manual. this also contains ISA)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 
+# assume sse and sse2 support
+
+# CPUID signature values of architectures
+# product comparison for instruction set extensions
+
+# vendor_id (intel, amd)
+# model (intel core i5-7200u @ 2.50GHz)
+# family (determines architecture, code, 4000, 4th generation, Haswell)
+# flags
+
+# check for all others
+
+
+
 endif(CMAKE_SYSTEM_NAME MATCHES "Windows")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

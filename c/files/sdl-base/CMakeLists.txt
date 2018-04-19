@@ -68,31 +68,32 @@ __m128 sum = __mm_add_ps(value_a, value_b);
 ##################################
 cmake_minimum_required(3.0 FATAL_ERROR)
 
-if(CMAKE_SOURCE_DIR STREQEUAL CMAKE_BINARY_DIR)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
   message(FATAL_ERROR "Please don't configure in source directory!")
 endif()
 
-project(
-  name
-  VERSION 0.0.1
-  LANGUAGES C
-)
+project(name)
+enable_language(C)
 
 # also have cmake/toolchains
 list(INSERT CMAKE_MODULE_PATH 0 "${name_SOURCE_DIR}/cmake/modules")
 
-# This will call check for sse and avx
 # hideo55, volk, vc
+# Calls FindAvailableSIMDExtensions, CheckCCompilerFlag
 include(GameBuildTypes)
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug")
 	message(STATUS "Build type not specified, defaulting to Debug")
 endif()
 
+# set version via git
+include(GameSetVersion)
+
+# find_package
 
 # execute_process(COMMAND SET Process OUTPUT_VARIABLE WINDOWS_MACHINE) 
 if (${GCC_MACHINE} MATCHES "x86.*")
-	# Set ARCH_SUPPORT to Native, SSE, AVX, etc
+	# Set ARCH_SUPPORT to Native, SSE, AVX, etc. List o
 	# Also set appropriate compiler flags
 elseif (${GCC_MACHINE})
 
@@ -100,7 +101,6 @@ else ()
 
 endif ()
 
-# add flags for profiling
 set(CMAKE_C_FLAGS_DEBUG "-ggdb3 -g3 -O0")
 set(CMAKE_C_FLAGS_MINSIZEREL "-Os -ffast-math -DNDEBUG -s -fmerge-all-constants")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -ffast-math -DNDEBUG -ggdb3 -g3 -fmerge-all-constants")
