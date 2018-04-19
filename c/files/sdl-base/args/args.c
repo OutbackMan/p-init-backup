@@ -9,8 +9,10 @@ typedef struct {
 	arg_type_t arg_type;	
 	const char* short_arg;
 	const char* long_arg;	
+	/* assume only 1
 	unsigned min_occurence_count;
 	unsigned max_occurence_count;
+	*/
 	const char* help_message;
 	union {
 		intmax_t int_value;
@@ -64,9 +66,11 @@ int arg__create_int_option()
 
 int arg_create_option(ArgOption* arg_option, arg_type_t arg_type, )
 {
+	/*
 	if (min_occurence_count > max_occurence_count) {
 		max_occurence_count = min_occurence_count;
 	}
+	*/
 		
 	switch (arg_type_t) {
 	case ARG_INT:
@@ -87,6 +91,32 @@ int arg_create_option(ArgOption* arg_option, arg_type_t arg_type, )
 	return SUCCESS;
 }
 
+int getopt()
+{
+	//  -W300
+	while (--argc > 0 && (*++argv)[0] == '-') {
+		for (char* s = argv[0] + 1; *s != '\0'; ++s) {
+			switch (*s) {
+			case 'W':
+				int val = 0;
+				while (isalnum(s)) {
+					val *= 10;
+					val += *s++ - '0';
+				}	
+			}		
+		}
+	}
+	
+}
+
+// argp
+
+// option = getopt("a:") --> optarg, optind, (opterror, optopt)
+int args_parse_options(int argc, char* argv[argc + 1], size_t num_options, ArgOptions options[num_options])
+{
+	// parse short
+}
+
 int main(int argc, char** argv)
 {
 	// arg_parse_tagged/untaggged/check
@@ -102,7 +132,7 @@ int main(int argc, char** argv)
 	ArgOption argument_list[NUM_ARGUMENTS] = { version };
 
 	// display errors
-	args_parse_options(argument_list, NUM_ARGUMENTS);
+	args_parse_options(NUM_ARGUMENTS, argument_list);
 
 	if (argument_list.version.count > 0) {
 		args_print_syntax(stdout, argument_list);
