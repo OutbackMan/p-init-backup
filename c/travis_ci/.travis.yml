@@ -29,11 +29,13 @@ matrix:
 		    - ubuntu-toolchain-r-test
           packages:
 		    - gcc-4.9
-				- libsdl2-dev
-		script:
+			- libsdl2-dev
+	  before_script:
+	    - export CC=gcc-4.9 
+	  script:
 	    - cmake .
-      - cmake --build . -- -j2
-      - ctest -j2
+        - cmake --build . -- -j2
+        - ctest -j2
 
     - language: c 
 	  compiler: gcc
@@ -44,8 +46,13 @@ matrix:
 		    - ubuntu-toolchain-r-test
           packages:
 		    - gcc-5
-	  env:
-	    - MATRIX_EVAL="CC=gcc-5"
+			- libsdl2-dev
+	  before_script:
+	    - export CC=gcc-5 
+	  script:
+	    - cmake .
+        - cmake --build . -- -j2
+        - ctest -j2
 
     - language: c 
 	  compiler: gcc
@@ -56,8 +63,13 @@ matrix:
 		    - ubuntu-toolchain-r-test
           packages:
 		    - gcc-6
-	  env:
-	    - MATRIX_EVAL="CC=gcc-6"
+			- libsdl2-dev
+	  before_script:
+	    - export CC=gcc-6
+	  script:
+	    - cmake .
+        - cmake --build . -- -j2
+        - ctest -j2
 
     - language: c 
 	  compiler: gcc
@@ -68,8 +80,13 @@ matrix:
 		    - ubuntu-toolchain-r-test
           packages:
 		    - gcc-7
-	  env:
-	    - MATRIX_EVAL="CC=gcc-7"
+			- libsdl2-dev
+	  before_script:
+	    - export CC=gcc-7
+	  script:
+	    - cmake .
+        - cmake --build . -- -j2
+        - ctest -j2
 
     - language: c 
 	  compiler: clang
@@ -183,5 +200,25 @@ matrix:
 #	    - docker exec -it emscripten cmake .
 #		- cmake --build . -- -j2 
 
-script:
+# find_package(java)
+# ndk, sdk
+# gradle (updated java make)
+
+# android ndk (native development kit) facilitates C. android SDK allows java to interact with C kernel.
+# C code uses JNI (java native interface) to interact with java
+
+# java activity (in android activity is the smallest action that can be taken) invokes our c code
+# so project in android java project with c support code -> produce .apk
+
+# FROM GITHUB android-readme.md
+# mv android-project/ game-android/
+# only support builds on linux and macosx
+
+# For 
+
+
+
+
+
+
 
