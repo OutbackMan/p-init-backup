@@ -1,126 +1,77 @@
-typedef enum {
-	ARG_INT,
-	ARG_REAL,
-	ARG_FILE,
-	ARG_STRING
-} arg_type_t;
-
+// default_arguments
 typedef struct {
-	arg_type_t arg_type;	
-	const char* short_arg;
-	const char* long_arg;	
-	/* assume only 1
-	unsigned min_occurence_count;
-	unsigned max_occurence_count;
-	*/
-	const char* help_message;
-	union {
-		intmax_t int_value;
-		long double real_value;
-		const char* str_value;
-		const char* file_value;
-	}
-	size_t arg_count;
-} ArgOption;
+	int width;
+	const char* name;
+	FILE* config;	
+} GameArgs;
 
-int arg__create_int_option()
+// init args
+// free args
+
+int game__parse_args(GameArgs* game_args, int argc, char* argv[argc + 1])
 {
-	arg_option->arg_type = ARG_INT;
+	int leave_code = 0;
 
-	if (short_arg != NULL) {
-		arg_option->short_arg = calloc(sizeof(char), 1);
-		if (arg_option->short_arg == NULL) {
-			return FAILURE;		
-		}
-		strncpy(arg_option->short_arg, short_arg, 1);
-	} else {
-		arg_option->short_arg = NULL;
-	}
-		
-	if (long_arg != NULL) {
-		size_t long_arg_length = strlen(long_arg);
-		arg_option->long_arg = calloc(sizeof(char), long_arg_length);
-		if (arg_option->long_arg == NULL) {
-			return FAILURE;		
-		}
-		strncpy(arg_option->long_arg, long_arg, long_arg_length);
-	} else {
-		arg_option->long_arg = NULL;
-	}
-			
-	arg_option->min_occurence_count = min_occurence_count;
-	arg_option->max_occurence_count = max_occurence_count;
+#if defined(_WIN32)
+	const char ARG_START = '\\';
+#else
+	const char ARG_START = '-';
+#endif
 
-	size_t help_message_length = strlen(help_message);
-	arg_option->help_message = calloc(sizeof(char), help_message_length);
-	if (arg_option->help_message == NULL) {
-		return FAILURE;		
-	}
-	strncpy(arg_option->help_message, help_message, help_message_length);
+	for (size_t arg_index = 1; arg_index < argc && argv[arg_index][0] == ARG_START; ++arg_index) {
+		for (char* arg_char = argv[arg_index] + 1; *arg_char != '\0'; ++arg_char) {
+			switch (*arg_char) {
+			case 'W':	
+				if (handle_int_arg(&(game_args->width), *arg_char, max, min) != SUCCESS) {
+					GAME_LEAVE(FAILURE);
+				}
+				break;
+			case 'H':
+				handle_int_arg(*arg_char, max, min);
+				break;
+			default:
 
-	arg_option->int_value = 0;
-	arg_option->arg_count = 0;
-
-	return SUCCESS;
-}
-
-int arg_create_option(ArgOption* arg_option, arg_type_t arg_type, )
-{
-	/*
-	if (min_occurence_count > max_occurence_count) {
-		max_occurence_count = min_occurence_count;
-	}
-	*/
-		
-	switch (arg_type_t) {
-	case ARG_INT:
-		arg__create_int_option();	
-		break;
-	case ARG_REAL:
-		break;
-	case ARG_FILE:
-		arg__create_int_option();	
-		break;
-	case ARG_STRING:
-		
-		break;
-	default:
-		break;
-	};
-
-	return SUCCESS;
-}
-
-int getopt()
-{
-	//  -W300
-	while (--argc > 0 && (*++argv)[0] == '-') {
-		for (char* s = argv[0] + 1; *s != '\0'; ++s) {
-			switch (*s) {
-			case 'W':
-				int val = 0;
-				while (isalnum(s)) {
-					val *= 10;
-					val += *s++ - '0';
-				}	
 			}		
 		}
 	}
-	
 }
 
-// argp
-
-// option = getopt("a:") --> optarg, optind, (opterror, optopt)
-int args_parse_options(int argc, char* argv[argc + 1], size_t num_options, ArgOptions options[num_options])
+int handle_int_arg(int* int_arg, char* arg_char, int max_int_value, int min_int_value)
 {
-	// parse short
+	// for arguments that cannot be null, use asserts to invoke undefined behaviour and to keep user honest
+	GAME_ASSERT(int_arg != NULL, "msg");
+	GAME_ASSERT(arg_char != NULL, "msg");
+
+	// we specifically handle the argument values that we document the function supports
+	if (min_int_value > max_int_value) {
+		max_int_value = min_int_value;		
+	}
+
+	while (isdigit(arg_char)) {
+		*int_arg *= 10;
+		*int_arg += *arg_char++ - '0';
+	}	
+	
+	if (*int_arg < min_int_value || *int_arg > max_int_value) {
+		return EARG_INVAL;
+	} else {
+		return SUCCESS;		
+	}
+}
+
+				int val = 0;
+			case 'S':
+			// start
+				while (isalnum(s) || *s == '-') {
+					++s;		
+				}
+			// end
+		}
+	}
 }
 
 int main(int argc, char** argv)
 {
-	// arg_parse_tagged/untaggged/check
-
 	const size_t NUM_ARGUMENTS = 1;
 
 	ArgOption version = {0}; 
