@@ -4,7 +4,28 @@ endif(DEFINED __find_available_simd_extensions_cmake__)
 set(__find_available_simd_extensions_cmake__ TRUE)
 
 function(_parse_simd_extensions cpu_info)
-	set(_available_simd_extensions PARENT_SCOPE) 
+	set(_available_simd_extensions PARENT_SCOPE)
+	
+	if(cpu_vendor STREQUAL "GenuineIntel")
+		# pentium pro <---> skylake
+		if(cpu_family STREQUAL "6")
+		
+		endif(cpu_family STREQUAL "6")
+		
+		# pentium
+		if(cpu_family STREQUAL "5")
+		
+		endif(cpu_family STREQUAL "5")
+		
+		if(cpu_family STREQUAL "15")
+		
+		# netburst
+		endif(cpu_family STREQUAL "15")
+	
+	
+	endif(cpu_vendor STREQUAL "GenuineIntel")
+	
+	
 
 	string(REGEX MATCH "^.*(sse).*$" "\\1" _sse_there cpu_info)
 	list(APPEND _available_simd_extensions _sse_there)
@@ -67,6 +88,10 @@ endif(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 # refer to Intel SDM (software developers manual. this also contains ISA)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
+	execute_process(COMMAND "REG QUERY HKLM\\Hardware\\Description\\System\\CentralProcessor\\0 /v VendorIdentifier"
+		OUTPUT_VARIABLE _cpu_vendor)
+	execute_process(COMMAND "HKLM\\Hardware\\Description\\System\\CentralProcessor\\0 /v Identifier"
+		OUTPUT_VARIABLE _cpu_id)
 
 # assume sse and sse2 support
 
