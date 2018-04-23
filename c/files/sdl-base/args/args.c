@@ -1,12 +1,16 @@
-int game__get_default_args(size_t game_args_num, GameArg* game_args)
-{
-	game_args = calloc(sizeof(GameArg), game_args_num);
-	if (game_args == NULL) {
-		return FAILURE;	
-	}
+#define DEFAULT_INITIALISER {0}
 
-				
-}
+#if defined(DEBUG_BUILD)
+#define SYS_ERROR_MSG() \
+	perror("System error incurred: "GAME_STRINGIFY(__FILE__)":"\
+		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__));
+#else
+#define SYS_ERROR_MSG() \
+	fprintf(LOG_FILE, "System error incurred: "GAME_STRINGIFY(__FILE__)":"\
+		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__)". %s\n", strerror(errno));
+#endif
+
+// Open log file on game start
 
 enum {
 	AGE_ARG,
@@ -16,23 +20,80 @@ enum {
 
 typedef struct {
 	arg_type_t arg_type;
-	const char* arg_help_message;
 	union {
 		int arg_int_value;
 		const char* arg_str_value;
 		bool arg_bool_value;
 	}
+	const char* arg_help_message;
 } GameArg;
 
-// init args
-// free args
+typedef struct {
+	size_t num_args;
+	GameArg* args;
+} GameArgs;
 
-int game__parse_args(size_t game_args_num, GameArg game_args, int argc, char* argv[argc + 1])
+int create_int_arg(GameArg* arg, int value, const char* msg)
+{
+	GAME_ASSERT(arg != NULL, "msg");
+
+	arg->arg_type = ARG_INT;
+	arg->arg_value = value;
+
+	arg->arg_help_message = calloc(sizeof(char), strlen(msg));
+	if (arg->arg_help_message == NULL) {
+		SYS_ERROR_MSG()
+		return FAILURE;		
+	}
+	strcpy(arg->arg_help_message, msg);
+
+	return SUCCESS;
+}
+
+int game__create_default_args(GameArgs* game_args)
+{
+	GAME_ASSERT(game_args != NULL);
+
+	int leave_code = DEFAULT_INITIALISER;
+
+	const size_t NUM_ARGUMENTS = 5;
+	game_args->num_args = NUM_ARGUMENTS;
+
+	game_args->args = calloc(sizeof(GameArgs), NUM_ARGUMENTS);
+	if (game_args->args == NULL) {
+		GAME_LEAVE(FAILURE);	
+	}
+		
+	int arg_status = DEFAULT_INITIALISER;
+	// alternative looping as this will affect base pointer
+	if ( (arg_status = create_arg(++game_args->args, type, value, help)) != SUCCESS ) {
+		GAME_LEAVE(FAILURE);		
+	}
+
+	GAME_LEAVE(SUCCESS);
+	
+	__leave:
+		if (arg_status == SUCCESS) destroy_arg(arg);
+		if (game_args != NULL) free(game_args);
+		return leave_code;
+}
+
+void game__destroy_default_args(GameArgs* game_args)
+{
+	GAME_ASSERT(game_args != NULL, "msg");
+
+	for (size_t arg_index = 0; arg_index < game_args->num_args; ++arg_index) {
+		destroy_arg(&game_args[arg_index]);
+	}
+
+	destroy_args(game_args);
+}
+
+int game__parse_args(GameArgs* game_args, int argc, char* argv[argc + 1])
 {
 	GAME_ASSERT(game_args != NULL, "msg");
 	
 	int leave_code = 0;
-
 	
 	if (game__get_default_args(game_args) != SUCCESS) {
 		GAME_LEAVE(FAILURE);		
@@ -59,7 +120,12 @@ int game__parse_args(size_t game_args_num, GameArg game_args, int argc, char* ar
 				break;
 			case 'H':
 				if (parse_bool_arg()) {
-					if (++arg_char != '\0') // error 
+					// Usage: game.exe [-H] [-Sstring] [-I80]
+					// game description
+					// -H display this help and exit	
+					args_print_syntax(stdout, argument_list); 
+					puts("program description");
+					args_print_glossary(argument_list);
 				}
 				break;
 			default:
@@ -87,6 +153,7 @@ int handle_int_arg(int* int_arg, int int_arg_min_value, int int_arg_max_value, c
 	}	
 	
 	if (*int_arg < min_int_value || *int_arg > max_int_value) {
+		printf("GAME: invalid option %s. Try running PROG -H for more information\n");
 		return EARG_INVAL;
 	} else {
 		return SUCCESS;		
@@ -119,18 +186,13 @@ int handle_str_arg(const char* str_arg, size_t str_arg_max_length, char* arg_cha
 
 int main(int argc, char** argv)
 {
-	int leave_code = 0;
+	int leave_code = DEFAULT_INITIALISER;
 
-	GameArgs game_args = {0};
-	if (game__parse_args(&game_args, argc, argv) != SUCCESS) {
+	GameArgs game_args = DEFAULT_INTIALISER;
+	if (game__handle_args(&game_args, argc, argv) != SUCCESS) {
 		GAME_LEAVE(FAILURE);		
 	}
 
-	if (game_args.width ) {
-		args_print_syntax(stdout, argument_list);
-		puts("program description");
-		args_print_glossary(argument_list);
-	}
 
 	game__free_args(&game_args);
 
