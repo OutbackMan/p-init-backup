@@ -1,0 +1,9 @@
+# Normalise files by converting to native line endings on checkout
+*.md text
+*.c text
+*.h text
+*.cmake text
+*.txt text
+*.html text
+*.css text
+*.js text
