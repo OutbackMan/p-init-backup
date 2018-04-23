@@ -20,6 +20,20 @@ License:
 #include <stdbool.h>
 
 /******************************************************************************
+ * CMAKE DEFINITIONS
+ *****************************************************************************/
+
+#cmakedefine GAME_VERSION "@GAME_VERSION@"
+#cmakedefine GAME_BUG_REPORT_ADDRESS "@GAME_BUG_REPORT_ADDRESS@"
+#cmakedefine GAME_NAME "@GAME_NAME@"
+#cmakedefine GAME_CREATOR "@GAME_CREATOR@"
+#cmakedefine GAME_ARCH "@GAME_ARCH@"
+#cmakedefine GAME_ARCH_SUPPORT "@GAME_ARCH_SUPPORT@"
+#cmakedefine GAME_BUILD_MODE "@GAME_BUILD_MODE"
+#cmakedefine GAME_DEBUG_BUILD "@GAME_DEBUG_BUILD"
+#cmakedefine GAME_RELEASE_BUILD "@GAME_RELEASE_BUILD"
+
+/******************************************************************************
  * UTILITY MACROS
  *****************************************************************************/
 
@@ -31,6 +45,35 @@ License:
 		exit_code = func_exit_code; \
 		goto __exit; \
 	} while (0);
+
+#if GAME_BUILD_MODE == GAME_BUILD_DEBUG_MODE
+#define SYS_ERROR_MSG() \
+	perror("System error incurred: "GAME_STRINGIFY(__FILE__)":"\
+		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__));
+#else
+#define SYS_ERROR_MSG() \
+	fprintf(LOG_FILE, "System error incurred: "GAME_STRINGIFY(__FILE__)":"\
+		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__)". %s\n", strerror(errno));
+#endif
+
+// game.log
+//					GAME LOG
+// Generated: date
+// Please send any inquiries to <email> inluding related log snippet(s).
+
+// [date] (Status Code: code) file:func:line "message"
+
+// HOLD OFF UNTIL AWARE OF SDL_LOG FUNCTIONALITY
+#if GAME_BUILD_MODE == GAME_BUILD_RELEASE_MODE
+// open log file
+int open_log_file(void) {
+	
+}
+// log_file_routine
+
+
+
+
 
 /******************************************************************************
  * COMPILER VERSION DETECTION 
@@ -136,15 +179,5 @@ static inline int GAME_INT_MAX(const int x, const int y)
 	return (x > y ? x : y);
 }
 
-/******************************************************************************
- * CMAKE DEFINITIONS
- *****************************************************************************/
-
-#cmakedefine GAME_VERSION "@GAME_VERSION@"
-#cmakedefine GAME_BUGREPORT_ADDRESS "@GAME_BUGREPORT_ADDRESS@"
-#cmakedefine GAME_NAME "@GAME_NAME@"
-#cmakedefine GAME_AUTHOR "@GAME_CREATOR@"
-#cmakedefine GAME_ARCH "@GAME_ARCH@"
-#cmakedefine GAME_ARCH_SUPPORT "@GAME_ARCH_SUPPORT@"
 
 #endif

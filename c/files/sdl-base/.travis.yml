@@ -1,0 +1,179 @@
+# LICENSE PREAMBLE
+
+dist: trusty
+
+git:
+  depth: 1
+
+branches:
+  only:
+    - master
+    - release
+
+notifications:
+  email: false
+  webhooks:
+    urls:
+	  - https://www.webhooks.gitter.im
+	  on_success: always
+	  on_failure: always
+
+language: c
+
+matrix:
+  include:
+
+################################################################################
+# LINUX BUILDS                                                                 #
+################################################################################
+
+    - compiler: gcc
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+          packages:
+		    - gcc-4.9
+	  env:
+	    - MATRIX_EVAL="CC=gcc-4.9"
+
+    - compiler: gcc
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+          packages:
+		    - gcc5
+	  env:
+	    - MATRIX_EVAL="CC=gcc-5"
+
+    - compiler: gcc
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+          packages:
+		    - gcc-6
+	  env:
+	    - MATRIX_EVAL="CC=gcc-6"
+
+    - compiler: gcc
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+          packages:
+		    - gcc-7
+	  env:
+	    - MATRIX_EVAL="CC=gcc-7"
+
+    - compiler: clang
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-trusty-6.0
+          packages:
+		    - clang-6.0
+	  env:
+	    - MATRIX_EVAL="CC=clang-6.0"
+
+    - compiler: clang
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-trusty-7.0
+          packages:
+		    - clang-7.0 
+	  env:
+	    - MATRIX_EVAL="CC=clang-7.0"
+
+    - compiler: clang
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-trusty-8.0
+          packages:
+		    - clang-8.0 
+	  env:
+	    - MATRIX_EVAL="CC=clang-8.0"
+
+    - compiler: clang
+	  os: linux
+	  addons:
+	    apt:
+		  sources:
+		    - ubuntu-toolchain-r-test
+			- llvm-toolchain-trusty-9.0
+          packages:
+		    - clang-9.0 
+	  env:
+	    - MATRIX_EVAL="CC=clang-9.0"
+
+################################################################################
+# MAC BUILDS                                                                   #
+################################################################################
+
+	- compiler: clang
+	  os: osx
+	  osx_image: xcode6.4 
+
+	- compiler: clang
+	  os: osx
+	  osx_image: xcode7.3 
+
+	- compiler: clang
+	  os: osx
+	  osx_image: xcode8 
+
+	- compiler: clang
+	  os: osx
+	  osx_image: xcode9 
+
+	- compiler: gcc
+	  os: osx
+	  osx_image: xcode8
+	  env:
+	    - MATRIX_EVAL="brew install sdl2 gcc-4.9 && CC=gcc-4.9"
+
+	- compiler: gcc
+	  os: osx
+	  osx_image: xcode8
+	  env:
+	    - MATRIX_EVAL="brew install gcc-5 && CC=gcc-5"
+
+	- compiler: gcc
+	  os: osx
+	  osx_image: xcode8
+	  env:
+	    - MATRIX_EVAL="brew install gcc-6 && CC=gcc-6"
+
+	- compiler: gcc
+	  os: osx
+	  osx_image: xcode8
+	  env:
+	    - MATRIX_EVAL="brew install gcc-7 && CC=gcc-7"
+
+install:
+  - 'if [ ${TRAVIS_OS_NAME} == "linux" ]; then
+		sudo apt-get install -y libsdl2-dev || travis_terminate 1;
+	else
+		brew install sdl2 || travis_terminate 1;
+    fi'
+
+before_script:
+  - eval "${MATRIX_EVAL}"
+
+script:
+  - cmake .
+  - cmake --build . -- -j2
+  - ctest -j2
