@@ -34,7 +34,7 @@ License:
 #cmakedefine GAME_RELEASE_BUILD "@GAME_RELEASE_BUILD"
 
 /******************************************************************************
- * UTILITY MACROS
+ * COMMON MACROS
  *****************************************************************************/
 
 #define GAME_TO_STRING(val)	#val
@@ -56,6 +56,9 @@ License:
 		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__)". %s\n", strerror(errno));
 #endif
 
+#define GAME_INTERNAL static
+#define GAME_LOCAL_PERSIST static
+
 // game.log
 //					GAME LOG
 // Generated: date
@@ -71,9 +74,16 @@ int open_log_file(void) {
 }
 // log_file_routine
 
+/******************************************************************************
+ * COMMON TYPEDEFS
+ *****************************************************************************/
 
-
-
+typedef float real32;
+typedef double real64;
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
 
 /******************************************************************************
  * COMPILER VERSION DETECTION 
@@ -101,20 +111,12 @@ int open_log_file(void) {
 #elif _MSC_VER <= 1912
 #define GAME_COMPILER "MSVC 2017"
 #endif
-#elif defined(__EMSCRIPTEN__)
-#define GAME_COMPILER "emscripten-"GAME_STRINGIFY(__EMSCRIPTEN_major__)"." \
-	GAME_STRINGIFY(__EMSCRIPTEN_minor__)"." \
-	GAME_STRINGIFY(__EMSCRIPTEN_tiny__)
-#elif defined(__MINGW32__)
-#define GAME_COMPILER "mingw32-"GAME_STRINGIFY(__MINGW32_MAJOR_VERSION__)"." \
-	GAME_STRINGIFY(__MINGW32_MINOR_VERSION__)
 #elif defined(__MINGW64__)
 #define GAME_COMPILER "mingw64-"GAME_STRINGIFY(__MINGW64_MAJOR_VERSION__)"." \
 	GAME_STRINGIFY(__MINGW64_MINOR_VERSION__)
 #else
 #define GAME_COMPILER "Unknown"
 #endif
-// appveyor for mingw, msys
 
 /******************************************************************************
  * COMPILER EXTENSIONS
@@ -150,6 +152,7 @@ int open_log_file(void) {
  * DEBUG ONLY DEFINITIONS
  *****************************************************************************/
 
+// change to assert
 #if defined(GAME_IN_DEBUG_MODE)
 static inline bool GAME_ASSERT_IF(const bool condition)
 {

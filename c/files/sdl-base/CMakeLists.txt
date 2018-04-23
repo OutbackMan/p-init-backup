@@ -90,6 +90,7 @@ endif()
 include(GameSetVersion)
 
 # find_package
+$ENV{MY_VAR} to the HINTS
 
 # execute_process(COMMAND SET Process OUTPUT_VARIABLE WINDOWS_MACHINE) 
 if (${GCC_MACHINE} MATCHES "x86.*")
@@ -183,7 +184,7 @@ foreach(game_test_suite ${_game_test_suites))
 endforeach(game_test_suite)
 int collisionTestSuite(int argc, char** argv)
 {
-	if (strcmp(argv[1], "test_name")) {
+	if (my_strcmp(argv[1], "test_name")) {
 		test_name();		
 	} else if () {
 		// ...		
@@ -191,8 +192,30 @@ int collisionTestSuite(int argc, char** argv)
 	return 0;
 }
 
+int my_strcmp(const char* s1, const char* s2)
+{
+	while (*s1 != NULL && (*s1 == *s2)) {
+		++s1;
+		++s2;
+	}	
+
+	return (*s1 - *s2);
+}
+
 create_test_sourcelist(project_source_files test_driver_name test_suite_source_files)
 add_executable(test_driver_name ${project_source_files} obtest.c??)
+# ./test_driver_name will now run all the test suites
+
+# generate test cases
+foreach(game_test_suite ${_game_test_suites})
+	foreach(game_test ${${game_test_suite}_tests})
+		add_test(NAME ${game_test_suite}_${game_test}
+			COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_driver_name ${game_test_suite}TestSuite ${game_test})
+		)
+	endforeach(game_test)
+endforeach(game_test_suite)
+
+
 # then run with: ctest -R collisions
 
 
