@@ -3,12 +3,21 @@ if(DEFINED __find_available_simd_extensions_cmake__)
 endif(DEFINED __find_available_simd_extensions_cmake__)
 set(__find_available_simd_extensions_cmake__ TRUE)
 
+# assume all cpus support sse (introduced 1997).
+# assume all cpus support sse2 (introduced 2001).
+# sse3 (introduced 2004)
+# ssse3 (2006)
+# https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers
+# look at wiki pages for sse, sse2, etc. to find what architecture first supported
 function(_parse_simd_extensions cpu_info)
 	set(_available_simd_extensions PARENT_SCOPE)
 	
 	if(cpu_vendor STREQUAL "GenuineIntel")
 		# pentium pro <---> skylake
 		if(cpu_family STREQUAL "6")
+			if(cpu_model EQUAL 0x3a)
+			
+			
 		
 		endif(cpu_family STREQUAL "6")
 		
@@ -24,6 +33,8 @@ function(_parse_simd_extensions cpu_info)
 	
 	
 	endif(cpu_vendor STREQUAL "GenuineIntel")
+	
+	if(cpu_vendor STREQUAL "AuthenticAMD")
 	
 	
 
