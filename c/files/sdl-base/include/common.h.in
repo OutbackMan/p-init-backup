@@ -63,7 +63,7 @@ License:
 
 // [date] (Status Code: code) file:func:line "message"
 
-// HOLD OFF UNTIL AWARE OF SDL_LOG FUNCTIONALITY
+// HOLD OFF UNTIL AWARE OF SDL_LOG FUNCTIONALITY (SDL_LogSetOutputFunction)
 #if GAME_BUILD_MODE == GAME_BUILD_RELEASE_MODE
 // open log file
 int open_log_file(void) {

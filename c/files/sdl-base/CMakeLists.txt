@@ -162,6 +162,38 @@ endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 ## CTEST CONFIGURATION
 ##################################
 enable_testing()
+# consider creating a library to avoid re-compilation
+
+set(_game_test_suites
+	collision physics
+)
+# specify the tests for the suites
+set(collision_tests 1 2 3 4)
+
+# ensure at least one test for each suite
+foreach(game_test_suite ${_game_test_suites})
+	if(NOT DEFINED "${game_test_suite}_tests")
+		set(${game_test_suite}_tests "1")
+	endif(NOT DEFINED "${game_test_suite}_tests")
+endforeach(game_test_suite)
+
+# aggregate test suite source files
+foreach(game_test_suite ${_game_test_suites))
+	set(_game_test_suite_sources ${_game_test_suite_sources} ${game_test_suite}TestSuite.c)
+endforeach(game_test_suite)
+int collisionTestSuite(int argc, char** argv)
+{
+	if (strcmp(argv[1], "test_name")) {
+		test_name();		
+	} else if () {
+		// ...		
+	}
+	return 0;
+}
+
+create_test_sourcelist(project_source_files test_driver_name test_suite_source_files)
+add_executable(test_driver_name ${project_source_files} obtest.c??)
+# then run with: ctest -R collisions
 
 
 ##################################

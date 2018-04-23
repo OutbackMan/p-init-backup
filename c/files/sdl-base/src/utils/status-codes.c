@@ -1,8 +1,8 @@
-#include "utils/misc/status-codes.h"
+#include "utils/status-codes.h"
 
 #include <stdbool.h>
 
-#define EXPAND_GAME_STATUS_CODE_MAP_AS_CASE(status_code, str) \
+#define EXPAND_GAME_STATUS_CODES_MAP_AS_CASE(status_code, str) \
 	case status_code: return str; 	
 const char* game_status_code_str(const game_status_code_t status_code)
 {
