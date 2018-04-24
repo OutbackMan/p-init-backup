@@ -10,6 +10,11 @@
 ################################################################################
 cmake_minimum_required(3.0 FATAL_ERROR)
 
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+	message(FATAL_ERROR "Only allow builds for x64.")
+	return()
+endif(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(WARNING "Prefer out-of-tree CMake builds.")
 endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
@@ -22,14 +27,11 @@ enable_language(C)
 include(SetVersion)
 include(HandleBuildType)
 
-target_include_directories(name PUBLIC
-	"${PROJECT_SOURCE_DIR}/include"
-)
-
 configure_file(
 	"${PROJECT_SOURCE_DIR}/include/common.h.in"
 	"${PROJECT_BINARY_DIR}/include/common.h"
 )
+
 
 set(CORE_SOURCES
 	${PROJECT_SOURCE_DIR}/src/core/file.c
@@ -41,34 +43,64 @@ add_executable(name
 	${OTHER_SOURCE}
 )
 
-# find_package
-$ENV{MY_VAR} to the HINTS
+target_include_directories(name PUBLIC
+	"${PROJECT_SOURCE_DIR}/include"
+)
 
+# use flare-engine FindSDL2 variants
+# neovim for libuv
+find_package(SDL2)
+if(NOT SDL2_FOUND)
+	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
+else(NOT SDL2_FOUND)
+	target_include_directories(name ${SDL2_INCLUDE_DIRS})
+	target_link_libraries(name ${SDL2_LIBRARIES})
+endif(NOT SDL2_FOUND)
 
+find_package(SDL2_ttf)
+if(NOT SDL2TTF_FOUND)
+	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
+else(NOT SDL2TTF_FOUND)
+	target_include_directories(name ${SDL2_ttf_INCLUDE_DIRS})
+	target_link_libraries(name ${SDL2_ttf_LIBRARIES})
+endif(NOT SDL2TTF_FOUND)
 
-## OPTION CONFIGURATION
+find_package(SDL2_ttf)
+if(NOT SDL2TTF_FOUND)
+	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
+else(NOT SDL2TTF_FOUND)
+	target_include_directories(name ${SDL2_ttf_INCLUDE_DIRS})
+	target_link_libraries(name ${SDL2_ttf_LIBRARIES})
+endif(NOT SDL2TTF_FOUND)
 
-## FILE CONFIGURATION
+find_package(SDL2_ttf)
+if(NOT SDL2TTF_FOUND)
+	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
+else(NOT SDL2TTF_FOUND)
+	target_include_directories(name ${SDL2_ttf_INCLUDE_DIRS})
+	target_link_libraries(name ${SDL2_ttf_LIBRARIES})
+endif(NOT SDL2TTF_FOUND)
 
+find_package(SDL2_ttf)
+if(NOT SDL2TTF_FOUND)
+	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
+else(NOT SDL2TTF_FOUND)
+	target_include_directories(name ${SDL2_ttf_INCLUDE_DIRS})
+	target_link_libraries(name ${SDL2_ttf_LIBRARIES})
+endif(NOT SDL2TTF_FOUND)
 
 ################################################################################
 # CTEST CONFIGURATION                                                          #
 ################################################################################
 enable_testing()
-# consider creating a library to avoid re-compilation
 
 set(_game_test_suites
 	collision physics
 )
 # specify the tests for the suites
 set(collision_tests 1 2 3 4)
+set(physics_tests "inertia" 2 3 4)
 
-# ensure at least one test for each suite
-foreach(game_test_suite ${_game_test_suites})
-	if(NOT DEFINED "${game_test_suite}_tests")
-		set(${game_test_suite}_tests "1")
-	endif(NOT DEFINED "${game_test_suite}_tests")
-endforeach(game_test_suite)
 
 # aggregate test suite source files
 foreach(game_test_suite ${_game_test_suites))
