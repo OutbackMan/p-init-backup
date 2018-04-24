@@ -32,7 +32,6 @@ configure_file(
 	"${PROJECT_BINARY_DIR}/include/common.h"
 )
 
-
 set(CORE_SOURCES
 	${PROJECT_SOURCE_DIR}/src/core/file.c
 	${PROJECT_SOURCE_DIR}/src/core/file2.c
@@ -101,14 +100,13 @@ set(_game_test_suites
 set(collision_tests 1 2 3 4)
 set(physics_tests "inertia" 2 3 4)
 
-
 # aggregate test suite source files
 foreach(game_test_suite ${_game_test_suites))
-	set(_game_test_suite_sources ${_game_test_suite_sources} ${game_test_suite}TestSuite.c)
+	set(_game_test_suite_sources ${_game_test_suite_sources} test/${game_test_suite}TestSuite.c)
 endforeach(game_test_suite)
 int collisionTestSuite(int argc, char** argv)
 {
-	if (my_strcmp(argv[1], "test_name")) {
+	if (game_strcmp(argv[1], "test_name")) {
 		test_name();		
 	} else if () {
 		// ...		
@@ -127,8 +125,7 @@ int my_strcmp(const char* s1, const char* s2)
 }
 
 create_test_sourcelist(project_source_files test_driver_name test_suite_source_files)
-add_executable(test_driver_name ${project_source_files} obtest.c??)
-# ./test_driver_name will now run all the test suites
+add_executable(test_driver_name ${project_source_files} src/utils/helpers.c)
 
 # generate test cases
 foreach(game_test_suite ${_game_test_suites})
