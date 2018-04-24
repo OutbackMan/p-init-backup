@@ -23,15 +23,11 @@ notifications:
 
 environment:
   matrix:
+	- CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 14 2015 64"
+	PREFIX: c:\project_msvc
+
 	- CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 14 2015"
 	PREFIX: c:\project_msvc
-	MSVC:
-	MINGWW64: rem
-
-	- CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=mingw32-gcc -DCMAKE_MAKE_PROGRAM=mingw32-make.exe -G "MinGW Makefiles"
-	PREFIX: c:\project_mingw64
-	MSVC: rem
-	MINGWW64:
 
   before_build:
 	- cmd: >-
@@ -40,88 +36,39 @@ environment:
 	%NEEDSDEPENDS% mkdir %PREFIX%\lib
 	%NEEDSDEPENDS% cd %TEMP%
 
-	# MSVC dependencies
 	- cmd: >- 
-	%NEEDSDEPENDS% %MSVC% appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.8-VC.zip
-	%NEEDSDEPENDS% %MSVC% 7z x SDL2-devel-2.0.8-VC.zip > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2-2.0.8\include\* %PREFIX%\include > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2-2.0.8\lib\x64\* %PREFIX%\lib > nul
-
-	- cmd: >- 
-	%NEEDSDEPENDS% %MSVC% appveyor DownloadFile http://www.libsdl.org/release/SDL2_ttf-devel-2.0.8-VC.zip
-	%NEEDSDEPENDS% %MSVC% 7z x SDL2_ttf-devel-2.0.8-VC.zip > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2_ttf-2.0.8\include\* %PREFIX%\include > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2_ttf-2.0.8\lib\x64\* %PREFIX%\lib > nul
+	%NEEDSDEPENDS% appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.8-VC.zip
+	%NEEDSDEPENDS% 7z x SDL2-devel-2.0.8-VC.zip > nul
+    %NEEDSDEPENDS% copy SDL2-2.0.8\include\* %PREFIX%\include > nul
+    %NEEDSDEPENDS% copy SDL2-2.0.8\lib\x64\* %PREFIX%\lib > nul
 
 	- cmd: >- 
-	%NEEDSDEPENDS% %MSVC% appveyor DownloadFile http://www.libsdl.org/release/SDL2_image-devel-2.0.8-VC.zip
-	%NEEDSDEPENDS% %MSVC% 7z x SDL2_image-devel-2.0.8-VC.zip > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2_image-2.0.8\include\* %PREFIX%\include > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2_image-2.0.8\lib\x64\* %PREFIX%\lib > nul
+	%NEEDSDEPENDS% appveyor DownloadFile http://www.libsdl.org/release/SDL2_ttf-devel-2.0.8-VC.zip
+	%NEEDSDEPENDS% 7z x SDL2_ttf-devel-2.0.8-VC.zip > nul
+    %NEEDSDEPENDS% copy SDL2_ttf-2.0.8\include\* %PREFIX%\include > nul
+    %NEEDSDEPENDS% copy SDL2_ttf-2.0.8\lib\x64\* %PREFIX%\lib > nul
 
 	- cmd: >- 
-	%NEEDSDEPENDS% %MSVC% appveyor DownloadFile http://www.libsdl.org/release/SDL2_net-devel-2.0.8-VC.zip
-	%NEEDSDEPENDS% %MSVC% 7z x SDL2_net-devel-2.0.8-VC.zip > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2_net-2.0.8\include\* %PREFIX%\include > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2_net-2.0.8\lib\x64\* %PREFIX%\lib > nul
+	%NEEDSDEPENDS% appveyor DownloadFile http://www.libsdl.org/release/SDL2_image-devel-2.0.8-VC.zip
+	%NEEDSDEPENDS% 7z x SDL2_image-devel-2.0.8-VC.zip > nul
+    %NEEDSDEPENDS% copy SDL2_image-2.0.8\include\* %PREFIX%\include > nul
+    %NEEDSDEPENDS% copy SDL2_image-2.0.8\lib\x64\* %PREFIX%\lib > nul
 
 	- cmd: >- 
-	%NEEDSDEPENDS% %MSVC% appveyor DownloadFile http://www.libsdl.org/release/SDL2_mixer_net-devel-2.0.8-VC.zip
-	%NEEDSDEPENDS% %MSVC% 7z x SDL2_mixer_net-devel-2.0.8-VC.zip > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2_mixer_net-2.0.8\include\* %PREFIX%\include > nul
-    %NEEDSDEPENDS% %MSVC% copy SDL2_mixer_net-2.0.8\lib\x64\* %PREFIX%\lib > nul
-
-	# Mingww64 dependencies
-	- cmd: >- 
-	%NEEDSDEPENDS% %MINGWW64% appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.8-mingw.tar.gz
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL2-devel-2.0.8-mingw.tar.gz > nul
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL2-devel-2.0.8-mingw.tar > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2-2.0.8\x86_64-w64-mingw32\include\SDL2\* %PREFIX%\include\SDL2 > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2-2.0.8\x86_64-w64-mingw32\lib\*.a %PREFIX%\lib > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2-2.0.8\x86_64-w64-mingw32\bin\*.dll %PREFIX%\lib > nul
+	%NEEDSDEPENDS% appveyor DownloadFile http://www.libsdl.org/release/SDL2_net-devel-2.0.8-VC.zip
+	%NEEDSDEPENDS% 7z x SDL2_net-devel-2.0.8-VC.zip > nul
+    %NEEDSDEPENDS% copy SDL2_net-2.0.8\include\* %PREFIX%\include > nul
+    %NEEDSDEPENDS% copy SDL2_net-2.0.8\lib\x64\* %PREFIX%\lib > nul
 
 	- cmd: >- 
-	%NEEDSDEPENDS% %MINGWW64% appveyor DownloadFile http://www.libsdl.org/release/SDL2_ttf-devel-2.0.8-mingw.tar.gz
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL2_ttf-devel-2.0.8-mingw.tar.gz > nul
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL2_ttf-devel-2.0.8-mingw.tar > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_ttf-2.0.8\x86_64-w64-mingw32\include\SDL2\* %PREFIX%\include\SDL2 > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_ttf-2.0.8\x86_64-w64-mingw32\lib\*.a %PREFIX%\lib > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_ttf-2.0.8\x86_64-w64-mingw32\bin\*.dll %PREFIX%\lib > nul
+	%NEEDSDEPENDS% appveyor DownloadFile http://www.libsdl.org/release/SDL2_mixer_net-devel-2.0.8-VC.zip
+	%NEEDSDEPENDS% 7z x SDL2_mixer_net-devel-2.0.8-VC.zip > nul
+    %NEEDSDEPENDS% copy SDL2_mixer_net-2.0.8\include\* %PREFIX%\include > nul
+    %NEEDSDEPENDS% copy SDL2_mixer_net-2.0.8\lib\x64\* %PREFIX%\lib > nul
 
-	- cmd: >- 
-	%NEEDSDEPENDS% %MINGWW64% appveyor DownloadFile http://www.libsdl.org/release/SDL2_image-devel-2.0.8-mingw.tar.gz
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL2_image-devel-2.0.8-mingw.tar.gz > nul
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL2_image-devel-2.0.8-mingw.tar > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_image-2.0.8\x86_64-w64-mingw32\include\SDL2\* %PREFIX%\include\SDL2 > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_image-2.0.8\x86_64-w64-mingw32\lib\*.a %PREFIX%\lib > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_image-2.0.8\x86_64-w64-mingw32\bin\*.dll %PREFIX%\lib > nul
 
-	- cmd: >- 
-	%NEEDSDEPENDS% %MINGWW64% appveyor DownloadFile http://www.libsdl.org/release/SDL2_net-devel-2.0.8-mingw.tar.gz
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL2_net-devel-2.0.8-mingw.tar.gz > nul
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL2_net-devel-2.0.8-mingw.tar > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_net-2.0.8\x86_64-w64-mingw32\include\SDL2\* %PREFIX%\include\SDL2 > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_net-2.0.8\x86_64-w64-mingw32\lib\*.a %PREFIX%\lib > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL2_net-2.0.8\x86_64-w64-mingw32\bin\*.dll %PREFIX%\lib > nul
-
-	- cmd: >- 
-	%NEEDSDEPENDS% %MINGWW64% appveyor DownloadFile http://www.libsdl.org/release/SDL_mixer-devel-2.0.8-mingw.tar.gz
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL_mixer-devel-2.0.8-mingw.tar.gz > nul
-    %NEEDSDEPENDS% %MINGWW64% 7z x SDL_mixer-devel-2.0.8-mingw.tar > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL_mixer-2.0.8\x86_64-w64-mingw32\include\SDL2\* %PREFIX%\include\SDL2 > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL_mixer-2.0.8\x86_64-w64-mingw32\lib\*.a %PREFIX%\lib > nul
-    %NEEDSDEPENDS% %MINGWW64% copy SDL_mixer-2.0.8\x86_64-w64-mingw32\bin\*.dll %PREFIX%\lib > nul
-
-environment:
-  variable1: value
-
-image:
-  - Visual Studio 2017
-clone_folder: c:\projects\source
-# cmd to specify using windows cmd instead of powershell
 build_script:
 - cmd: >-
-  set MY_VARIABLE=value # access %MY_VARIABLE%
   mkdir build
   
   cd build
@@ -131,3 +78,11 @@ build_script:
   cmake --build . --config "Release"
 test_script:
 - cmd: ctest -C Debug
+
+environment:
+  variable1: value
+
+image:
+  - Visual Studio 2017
+clone_folder: c:\projects\source
+
