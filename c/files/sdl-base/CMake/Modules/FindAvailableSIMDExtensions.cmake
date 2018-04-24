@@ -42,31 +42,38 @@ function(_parse_simd_extensions cpu_vendor_str cpu_arch_family_num cpu_arch_mode
 			elseif(cpu_arch_model_num STREQUAL "37" OR cpu_arch_model_num STREQUAL "44" OR cpu_arch_model_num STREQUAL "47")
 
 			# Enhanced Core
-			elseif(cpu_arch_model_num STREQUAL "37" OR cpu_arch_model_num STREQUAL "44" OR cpu_arch_model_num STREQUAL "47")
-
-
+			elseif(cpu_arch_model_num STREQUAL "37" OR cpu_arch_model_num STREQUAL "44" OR cpu_arch_model_num STREQUAL "47") 
+		else(cpu_family STREQUAL "6")
+			message(WARNING "Your Intel CPU architecture is not supported. Defaulting to 'sse', 'sse2' and 'sse3' extensions.")
 		endif(cpu_family STREQUAL "6")
-		
-		# pentium
-		if(cpu_family STREQUAL "5")
-		
-		endif(cpu_family STREQUAL "5")
-		
-		if(cpu_family STREQUAL "15")
-		
-		# netburst
-		endif(cpu_family STREQUAL "15")
-	
 	
 	elseif(cpu_vendor_str STREQUAL "AuthenticAMD")
+		if(cpu_arch_family_num EQUAL 15 AND cpu_arch_model_num GREATER 64)
+			message(STATUS "Detected AMD K8 CPU architecture. Supports 'sse', 'sse2', 'sse3'")
+			list(APPEND _available_simd_extensions sse)
+
+		elseif(cpu_arch_family_num STREQUAL "16")
+			message(STATUS "Detected AMD K10 CPU architecture.")
+
+		elseif(cpu_arch_family_num STREQUAL "20")
+			message(STATUS "Detected AMD Bobcat CPU architecture.")
+
+		elseif(cpu_arch_family_num STREQUAL "21")
+			message(STATUS "Detected AMD Bulldozer CPU architecture.")
+
+		elseif(cpu_arch_family_num STREQUAL "22")
+			message(STATUS "Detected AMD Jaguar CPU architecture.")
+
+		elseif(cpu_arch_family_num STREQUAL "23")
+			message(STATUS "Detected AMD Zen CPU architecture.")
+
+		else(cpu_arch_family_num STREQUAL "15")
+			message(WARNING "Your AMD CPU architecture is not supported. Defaulting to 'sse', 'sse2' and 'sse3' extensions.")
+		endif(cpu_arch_family_num STREQUAL "15")
 		
-	
 	else(cpu_vendor_str STREQUAL "GenuineIntel")
 		message(WARNING "CPU vendor is not either of the supported Intel or AMD vendors. Defaulting to 'sse', 'sse2' and 'sse3' extensions.")
 	endif(cpu_vendor_str STREQUAL "GenuineIntel")
-	
-
-	# SSE3 intel code name Prescott New Instructions
 endfunction(_parse_simd_extensions)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
