@@ -10,79 +10,41 @@
 ################################################################################
 cmake_minimum_required(3.0 FATAL_ERROR)
 
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(WARNING "Prefer out-of-tree CMake builds.")
-endif(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+endif("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+
+list(INSERT "${CMAKE_MODULE_PATH}" 0 "${CMAKE_SOURCE_DIR}/CMake/Modules")
 
 project(name)
 enable_language(C)
 
-list(INSERT CMAKE_MODULE_PATH 0 "${name_SOURCE_DIR}/cmake/modules")
+include(SetVersion)
+include(HandleBuildType)
 
-include(GameBuildTypes)
-if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE "Debug")
-	message(STATUS "Build type not specified, defaulting to Debug")
-endif()
+target_include_directories(name PUBLIC
+	"${PROJECT_SOURCE_DIR}/include"
+)
 
-# set version via git
-include(GameSetVersion)
+configure_file(
+	"${PROJECT_SOURCE_DIR}/include/common.h.in"
+	"${PROJECT_BINARY_DIR}/include/common.h"
+)
+
+set(CORE_SOURCES
+	${PROJECT_SOURCE_DIR}/src/core/file.c
+	${PROJECT_SOURCE_DIR}/src/core/file2.c
+)
+
+add_executable(name
+	${CORE_SOURCES}
+	${OTHER_SOURCE}
+)
 
 # find_package
 $ENV{MY_VAR} to the HINTS
 
 
-set(CMAKE_C_FLAGS_DEBUG "-ggdb3 -g3 -O0")
-set(CMAKE_C_FLAGS_MINSIZEREL "-Os -ffast-math -DNDEBUG -s -fmerge-all-constants")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -ffast-math -DNDEBUG -ggdb3 -g3 -fmerge-all-constants")
-set(CMAKE_C_FLAGS_RELEASE "-O3 -ffast-math -DNDEBUG -fmerge-all-constants")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")
-set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "-s")
-if (GCC_VERSION VERSION_GREATER 4.6 OR GCC_VERSION VERSION_EQUAL 4.6)
-    set(GCC_FLTO_FLAGS "-flto -fdata-sections -ffunction-sections")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${GCC_FLTO_FLAGS}")
-    set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} ${GCC_FLTO_FLAGS}")
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -Wl,--gc-sections")
-    set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} -Wl,--gc-sections")
-  endif (GCC_VERSION VERSION_GREATER 4.6 OR GCC_VERSION VERSION_EQUAL 4.6)
-
-  # Enable "unsafe" loop optimizations on recent versions.
-  if (GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -funsafe-loop-optimizations")
-    set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -funsafe-loop-optimizations")
-  endif (GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
-
-  # Check for undefined behaviour when debugging.
-  if (GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=undefined")
-  endif (GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
-
-  # Use fat LTO objects.
-  if (GCC_VERSION VERSION_GREATER 4.9 OR GCC_VERSION VERSION_EQUAL 4.9)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffat-lto-objects")
-  endif (GCC_VERSION VERSION_GREATER 4.9 OR GCC_VERSION VERSION_EQUAL 4.9)
-endif (${CMAKE_C_COMPILER_ID} MATCHES GNU)
-
-## COMPILER CONFIGURATION
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
-	execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpmachine
-		OUTPUT_VARIABLE NAME_ARCH
-	)
-
-	### GCC SPECIFIC
-	if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-	
-	### CLANG SPECIFIC
-	else ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-	
-	endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-	
-	
-endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
-
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
-
-endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 
 ## OPTION CONFIGURATION
 
@@ -164,22 +126,4 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "ExampleDir")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icon.ico")
 include(CPack)
 include(CPackIFW)
-
-target_include_directories(name PUBLIC
-	"${name_SOURCE_DIR}/include"
-)
-
-configure_file(
-	"${name_SOURCE_DIR}/include/config.h.in"
-)
-
-# set CMAKE_PREFIX_PATH appropriatley.
-# unfortunately cannot do code coverage
-find_package(easy_profiler REQUIRED)
-target_link_libraries(name easy_profiler)
-# refer to easy_profiler github readme to compile with msvc not using visual studio
-# for actual profiler use remotery. remotery is only useful if program has a 'main-loop'.
-
-# enable_language(ASM_MASM)
-# properties and caches for access in subdirectories
 

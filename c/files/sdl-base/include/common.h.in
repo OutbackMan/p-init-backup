@@ -89,11 +89,8 @@ typedef uint64_t u64;
 #elif _MSC_VER <= 1912
 #define GAME_COMPILER "MSVC 2017"
 #endif
-#elif defined(__MINGW64__)
-#define GAME_COMPILER "mingw64-"GAME_STRINGIFY(__MINGW64_MAJOR_VERSION__)"." \
-	GAME_STRINGIFY(__MINGW64_MINOR_VERSION__)
 #else
-#define GAME_COMPILER "Unknown"
+#define GAME_COMPILER "Unsupported Compiler"
 #endif
 
 /******************************************************************************
