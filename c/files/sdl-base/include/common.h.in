@@ -18,6 +18,7 @@ License:
 #define __common_h__
 
 #include <stdbool.h>
+#include <stdint.h>
 
 /******************************************************************************
  * CMAKE DEFINITIONS
@@ -40,39 +41,16 @@ License:
 #define GAME_TO_STRING(val)	#val
 #define GAME_STRINGIFY(str)	GAME_TO_STRING(str)
 
+#define GAME_INTERNAL static
+#define GAME_LOCAL_PERSIST static
+#define GAME_DEFAULT_INITIALISER {0}
+
 #define GAME_LEAVE(func_exit_code) \
 	do { \
 		exit_code = func_exit_code; \
 		goto __exit; \
 	} while (0);
 
-#if GAME_BUILD_MODE == GAME_BUILD_DEBUG_MODE
-#define SYS_ERROR_MSG() \
-	perror("System error incurred: "GAME_STRINGIFY(__FILE__)":"\
-		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__));
-#else
-#define SYS_ERROR_MSG() \
-	fprintf(LOG_FILE, "System error incurred: "GAME_STRINGIFY(__FILE__)":"\
-		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__)". %s\n", strerror(errno));
-#endif
-
-#define GAME_INTERNAL static
-#define GAME_LOCAL_PERSIST static
-
-// game.log
-//					GAME LOG
-// Generated: date
-// Please send any inquiries to <email> inluding related log snippet(s).
-
-// [date] (Status Code: code) file:func:line "message"
-
-// HOLD OFF UNTIL AWARE OF SDL_LOG FUNCTIONALITY (SDL_LogSetOutputFunction)
-#if GAME_BUILD_MODE == GAME_BUILD_RELEASE_MODE
-// open log file
-int open_log_file(void) {
-	
-}
-// log_file_routine
 
 /******************************************************************************
  * COMMON TYPEDEFS
@@ -147,40 +125,5 @@ typedef uint64_t u64;
 #define GAME_ALIGN
 #define GAME_DEPRECATED
 #endif
-
-/******************************************************************************
- * DEBUG ONLY DEFINITIONS
- *****************************************************************************/
-
-// change to assert
-#if defined(GAME_IN_DEBUG_MODE)
-static inline bool GAME_ASSERT_IF(const bool condition)
-{
-	return !condition;	
-}
-
-static inline bool GAME_IMPLIES(const bool truth, const bool implication)
-{
-	return (!truth || implication);	
-}
-#else
-static inline bool GAME_ASSERT_IF(const bool condition) {
-	;	
-}
-static inline bool GAME_IMPLIES(const bool truth, const bool implication)
-{
-	;
-}
-#endif
-
-/******************************************************************************
- * UTILITY FUNCTIONS
- *****************************************************************************/
-
-static inline int GAME_INT_MAX(const int x, const int y)
-{
-	return (x > y ? x : y);
-}
-
 
 #endif

@@ -1,85 +1,24 @@
-#: Author       "Ryan McClue" <rj.coight@gmail.com>
-#: Description  General C-based project configuration supporting CMake, CTest and CPack.
-#: Usage        
-#::   mkdir build/ && cd build/ && cmake .. 
-#::   ctest <name>
-#::   cpack <name>
+#@ Author       "Ryan McClue" <mcclue.ryan@gmail.com>
+#@ Description  Cross platform 2D SDL game.
+#@ Usage: 
+#@	 mkdir build/ && cd build/ && cmake .. 
+#@   ctest <name>
+#@   cpack <name>
 
-# The data in the instruction like float x = y + 3; will be replicated a minimum of 4 times, and only one will be kept.
-# This is due to SIMD. (SSE, SSE2 (more registers) and AVX are 4 wide. This layout can waste pixels if iterating sequentially)
-# The effort to decode instruction stream and decide how to operate on it, e.g can instructions be executed in parallel, i.e. pipelined,
-# what circuits are available to use etc.
-
-struct Color {
-	int r, g, b, a;	
-}
-
-# SOA preferred for loading into SIMD register as intel doesn't support strided loading, e.g. load every 4th byte
-struct Colors {
-	int* r;	
-	int* g;	
-	int* b;	
-	int* a;	
-}
-# obtain SSE instructions from intel intrinsics (rotate integer)
-# very hard for compiler to do this automatically
-# iterate over pixels in 4
-<emmintrin.h>
-__m128 inv = __mm_set1_ps(1.0f / 255.0f);
-
-__m128 value_test = __mm_setzero_ps();
-__m128 value_a = __mm_set1_ps(1.0f); # set all 4 lanes to 1
-__m128 value_b = __mm_set1_ps(2.0f);
-
-__m128 value_a = __mm_set_ps(1.0f, 2.0f, 3.0f, 4.0f);
-__m128 value_b = __mm_set_ps(10.0f, 11.0f, 12.0f, 13.0f);
-
-__m128 sum = __mm_add_ps(value_a, value_b);
-# separate loop into smaller loops, one for memory loading, computation and finalisation.
-
-# cpu will copy from memory->cache->registers, then registers->cache->memory
-# cycle is the smallest unit of time for a CPU. L1, L2, L3 increasing cycle access count.
-# the instructions from memory, i.e. produced from the compiler will be loaded and decoded to i-cache as microcode.
-# each cycle, we access instruction stream from i-cache and issue the instruction, i.e. pass off to a unit, e.g. ALU, etc.
-# this occurs out of order, to prevent latency from instructions depending on others
-# issuing the instruction begins a pipeline, whereby each instruction is executed in stages. Each stage completes part of an instruction in parallel.
-# this is to allow units to be free earlier
-# instructions only care about throughput as we assume we are operating on many things at once so latency becomes less important.
-
-# for every instruction, we would like to know what the latency (time from issue to completion) and throughput (how many can be done if pipelined) is.
-# always care about memory bandwidth/throughput, i.e how much memory moved on bus to cpu
-# prefetch to avoid cache misses which are costly due to memory latency (hyperthreading can also be used, i.e. swap between logical threads)
-# so, small code size for i-cache
-# high cache coherency
-# know instruction stream to utilise pipelining
-
-# 1. work out how many cycles we have to maintain frame rate (1 core, 1 cpu). In actuality, a 4 core cpu will each have the same clock speed.
-# 2. gather statistics
-# 3. make estimate regarding how fast it should be running
-# 4. analyze efficiency and performance
-# ----
-# 1. focus in on most time spent
-# 2. remove unecessary code
-# 3. replace function calls with inline code (paste in location to flatten)
-# 4. smarter ways of doing things (precomputing, operations bypassed with if)
-
-##################################
-## CMAKE CONFIGURATION
-##################################
+################################################################################
+# CMAKE CONFIGURATION                                                          #
+################################################################################
 cmake_minimum_required(3.0 FATAL_ERROR)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
-  message(FATAL_ERROR "Please don't configure in source directory!")
-endif()
+  message(WARNING "Prefer out-of-tree CMake builds.")
+endif(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 
 project(name)
 enable_language(C)
 
-# also have cmake/toolchains
 list(INSERT CMAKE_MODULE_PATH 0 "${name_SOURCE_DIR}/cmake/modules")
 
-# hideo55, volk, vc
-# Calls FindAvailableSIMDExtensions, CheckCCompilerFlag
 include(GameBuildTypes)
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Debug")
@@ -92,15 +31,6 @@ include(GameSetVersion)
 # find_package
 $ENV{MY_VAR} to the HINTS
 
-# execute_process(COMMAND SET Process OUTPUT_VARIABLE WINDOWS_MACHINE) 
-if (${GCC_MACHINE} MATCHES "x86.*")
-	# Set ARCH_SUPPORT to Native, SSE, AVX, etc. List o
-	# Also set appropriate compiler flags
-elseif (${GCC_MACHINE})
-
-else ()
-
-endif ()
 
 set(CMAKE_C_FLAGS_DEBUG "-ggdb3 -g3 -O0")
 set(CMAKE_C_FLAGS_MINSIZEREL "-Os -ffast-math -DNDEBUG -s -fmerge-all-constants")
@@ -159,9 +89,9 @@ endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 ## FILE CONFIGURATION
 
 
-##################################
-## CTEST CONFIGURATION
-##################################
+################################################################################
+# CTEST CONFIGURATION                                                          #
+################################################################################
 enable_testing()
 # consider creating a library to avoid re-compilation
 
@@ -219,9 +149,9 @@ endforeach(game_test_suite)
 # then run with: ctest -R collisions
 
 
-##################################
-## CPACK CONFIGURATION
-##################################
+################################################################################
+# CPACK CONFIGURATION                                                          #
+################################################################################
 # May have to consider handling uninstall
 include(InstallRequiredSystemLibraries)
 set(CPACK_PACKAGE_NAME "name")
