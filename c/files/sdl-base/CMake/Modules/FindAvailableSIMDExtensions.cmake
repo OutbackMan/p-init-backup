@@ -8,7 +8,7 @@ set(__find_available_simd_extensions_cmake__ TRUE)
 # sse3 (introduced 2004)
 # ssse3 (2006)
 
-
+# http://users.atw.hu/instlatx64/CPU_chart_v191.png
 # https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers
 #  CPUID Signature Values of Of Recent Intel Microarchitectures 
 # (https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-optimization-manual.pdf)
