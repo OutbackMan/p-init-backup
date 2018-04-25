@@ -9,6 +9,7 @@ set(__find_available_simd_extensions_cmake__ TRUE)
 # ssse3 (2006)
 
 # http://users.atw.hu/instlatx64/CPU_chart_v191.png
+# https://github.com/Maratyszcza/cpuinfo/blob/master/src/x86/uarch.c
 # https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers
 #  CPUID Signature Values of Of Recent Intel Microarchitectures 
 # (https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-optimization-manual.pdf)
@@ -40,6 +41,7 @@ function(_parse_simd_extensions cpu_vendor_str cpu_arch_family_num cpu_arch_mode
 
 			# Nehalem
 			elseif(cpu_arch_model_num STREQUAL "37" OR cpu_arch_model_num STREQUAL "44" OR cpu_arch_model_num STREQUAL "47")
+				
 
 			# Enhanced Core
 			elseif(cpu_arch_model_num STREQUAL "37" OR cpu_arch_model_num STREQUAL "44" OR cpu_arch_model_num STREQUAL "47") 
@@ -66,6 +68,7 @@ function(_parse_simd_extensions cpu_vendor_str cpu_arch_family_num cpu_arch_mode
 
 		elseif(cpu_arch_family_num STREQUAL "23")
 			message(STATUS "Detected AMD Zen CPU architecture.")
+			# ryzen
 
 		else(cpu_arch_family_num STREQUAL "15")
 			message(WARNING "Your AMD CPU architecture is not supported. Defaulting to 'sse', 'sse2' and 'sse3' extensions.")
