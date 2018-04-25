@@ -23,6 +23,8 @@ function(_parse_simd_extensions cpu_vendor_str cpu_arch_family_num cpu_arch_mode
 	
 	if(cpu_vendor_str STREQUAL "GenuineIntel")
 		if(cpu_arch_family_num STREQUAL "6")
+			# Kabylake
+			
 			# Skylake
 			if(cpu_arch_model_num STREQUAL "58")
 			# Broadwell
@@ -41,6 +43,8 @@ function(_parse_simd_extensions cpu_vendor_str cpu_arch_family_num cpu_arch_mode
 
 			# Nehalem
 			elseif(cpu_arch_model_num STREQUAL "37" OR cpu_arch_model_num STREQUAL "44" OR cpu_arch_model_num STREQUAL "47")
+				if(cpu_arch_model_num STREQUAL "0x1A")
+					set(_target_codename "bloomfield")
 				
 
 			# Enhanced Core
@@ -62,6 +66,7 @@ function(_parse_simd_extensions cpu_vendor_str cpu_arch_family_num cpu_arch_mode
 
 		elseif(cpu_arch_family_num STREQUAL "21")
 			message(STATUS "Detected AMD Bulldozer CPU architecture.")
+			
 
 		elseif(cpu_arch_family_num STREQUAL "22")
 			message(STATUS "Detected AMD Jaguar CPU architecture.")
