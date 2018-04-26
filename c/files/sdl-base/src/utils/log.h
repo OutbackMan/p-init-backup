@@ -1,4 +1,3 @@
-
 // .h
 typedef enum  {
 	LOG_INFO, 

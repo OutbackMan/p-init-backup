@@ -1,17 +1,3 @@
-#define DEFAULT_INITIALISER {0}
-
-#if defined(DEBUG_BUILD)
-#define SYS_ERROR_MSG() \
-	perror("System error incurred: "GAME_STRINGIFY(__FILE__)":"\
-		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__));
-#else
-#define SYS_ERROR_MSG() \
-	fprintf(LOG_FILE, "System error incurred: "GAME_STRINGIFY(__FILE__)":"\
-		GAME_STRINGIFY(__func__)":"GAME_STRINGIFY(__LINE__)". %s\n", strerror(errno));
-#endif
-
-// Open log file on game start
-
 enum {
 	AGE_ARG,
 	NAME_ARG,
@@ -192,6 +178,9 @@ int main(int argc, char** argv)
 	if (game__handle_args(&game_args, argc, argv) != SUCCESS) {
 		GAME_LEAVE(FAILURE);		
 	}
+
+	// accessed through
+	game_args.age 
 
 
 	game__free_args(&game_args);

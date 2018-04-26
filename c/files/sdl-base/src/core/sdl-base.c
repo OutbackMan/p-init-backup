@@ -7,33 +7,12 @@
 #include <stddef.h>
 
 #define PI32 3.14159265359f
-#define LOCAL_PERSIST static
-#define INTERNAL static
-#define BLACK {0, 0, 0, 255}
-#define GREY {128, 128, 128, 255}
-#define WHITE {255, 255, 255, 255}
-#define BROWN {165, 42, 42, 255}
-#define RED {255, 0, 0, 255}
-#define ORANGE {255, 165, 0, 255}
-#define YELLOW {255, 255, 0, 255}
-#define GREEN {0, 255, 0, 255}
-#define BLUE {0, 0, 255, 255}
-#define PURPLE {128, 0, 128, 255}
-#define BG_COLOUR BLACK
 
 INTERNAL inline u32 sdl_colour_to_bitmask(SDL_Colour* colour)
 {
 	return ((colour->a << 24) | (colour->r << 16) | 
 				(colour->g << 8) | colour->b);	
 }
-
-typedef float real32;
-typedef double real64;
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-typedef int STATUS_CODE;
 
 enum {
 	SENTINEL_CODE = -1,

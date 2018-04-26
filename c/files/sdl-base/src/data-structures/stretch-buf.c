@@ -1,13 +1,24 @@
-typedef struct BufHdr {
+typedef struct GameStretchyBufHdr {
     size_t len;
     size_t cap;
-    char buf[];
-} BufHdr;
+    char payload[0];
+} GameStretchyBufHdr;
 
-#define buf__hdr(b) ((BufHdr *)((char *)(b) - offsetof(BufHdr, buf)))
+void* game__stretchy_buf_grow(
+	const void* buf_payload, 
+	size_t buf_new_len, 
+	size_t buf_payload_elem_size
+);
 
-#define buf_len(b) ((b) ? buf__hdr(b)->len : 0)
-#define buf_cap(b) ((b) ? buf__hdr(b)->cap : 0)
+#define GAME_STRETCHY_BUF__HDR(buf) \
+	((GameStretchyBufHdr *)((char *)(buf) - offsetof(GameStretchyBufHdr, buf)))
+
+#define GAME_STRETCHY_BUF_LEN(buf) \
+	((buf != NULL) ? GAME_STRETCHY_BUF__HDR(buf)->len : 0)
+
+#define GAME_STRETCHY_BUF_CAP(buf) \
+	((buf != NULL) ? buf__hdr(b)->cap : 0)
+
 #define buf_end(b) ((b) + buf_len(b))
 #define buf_sizeof(b) ((b) ? buf_len(b)*sizeof(*b) : 0)
 
@@ -21,9 +32,9 @@ void *buf__grow(const void *buf, size_t new_len, size_t elem_size) {
     assert(buf_cap(buf) <= (SIZE_MAX - 1)/2);
     size_t new_cap = CLAMP_MIN(2*buf_cap(buf), MAX(new_len, 16));
     assert(new_len <= new_cap);
-    assert(new_cap <= (SIZE_MAX - offsetof(BufHdr, buf))/elem_size);
-    size_t new_size = offsetof(BufHdr, buf) + new_cap*elem_size;
-    BufHdr *new_hdr;
+    assert(new_cap <= (SIZE_MAX - offsetof(GameStretchyBufHdr, buf))/elem_size);
+    size_t new_size = offsetof(GameStretchyBufHdr, buf) + new_cap*elem_size;
+    GameStretchyBufHdr *new_hdr;
     if (buf) {
         new_hdr = xrealloc(buf__hdr(buf), new_size);
     } else {
