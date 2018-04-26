@@ -47,10 +47,11 @@ License:
 		goto __exit; \
 	} while (0);
 
+// don't append ';' as these should be used like functions
 #if GAME_BUILD_MODE_DEBUG
-#define GAME_BREAKPOINT() raise(SIGABRT);
+#define GAME_BREAKPOINT() raise(SIGABRT)
 #else
-#define GAME_BREAKPOINT() (void)0;
+#define GAME_BREAKPOINT() (void)0
 #endif
 
 /******************************************************************************
@@ -97,8 +98,8 @@ typedef uint64_t u64;
 /******************************************************************************
  * COMPILER EXTENSIONS
  *****************************************************************************/
+
 #if defined(__GNUC__) || defined(__llvm__) 
-#include <x86initrn.h> // for __rdtsc()
 #define GAME_ALIGN
 #define GAME_PURE __attribute__((pure))
 #define GAME_CONST __attribute__((const))
@@ -123,5 +124,23 @@ typedef uint64_t u64;
 #define GAME_ALIGN
 #define GAME_DEPRECATED
 #endif
+
+/******************************************************************************
+ * COMMON FUNCTIONS
+ *****************************************************************************/
+
+static inline int GAME_MAX_INT(const int x, const int y)
+{
+	return (x > y ? x : y);	
+}
+
+static inline int GAME_MAX_INT(const int x, const int y)
+{
+	return (x > y ? x : y);	
+}
+
+
+
+
 
 #endif
