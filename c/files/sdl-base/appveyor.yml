@@ -1,15 +1,13 @@
 version: "{branch}.{build}"
 
-configuration: "Release"
-
-platform: "x64"
-
 branches:
   only:
     - master
 	- release
 
-os: "Visual Studio 2017"
+configuration: "Release"
+
+platform: "x64"
 
 shallow_copy: "true"
 clone_depth: "1"
@@ -23,11 +21,29 @@ notifications:
 
 environment:
   matrix:
-	- CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 14 2015 64"
-	PREFIX: c:\project_msvc
+	- APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2017"
+	  CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 15 2017"
+	  PREFIX: c:\project_msvc
 
-	- CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 14 2015"
-	PREFIX: c:\project_msvc
+	- APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2015"
+	  CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 14 2015"
+	  PREFIX: c:\project_msvc
+
+	- APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2013"
+	  CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 12 2013"
+	  PREFIX: c:\project_msvc
+
+	- APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2012"
+	  CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 11 2012"
+	  PREFIX: c:\project_msvc
+
+	- APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2010"
+	  CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 10 2010"
+	  PREFIX: c:\project_msvc
+
+	- APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2008"
+	  CMAKE_ARGS: -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 9 2008"
+	  PREFIX: c:\project_msvc
 
   before_build:
 	- cmd: >-
@@ -69,6 +85,8 @@ environment:
 
 build_script:
 - cmd: >-
+  cd %APPVEYOR_BUILD_FOLDER%
+  cmkae
   mkdir build
   
   cd build
@@ -76,6 +94,22 @@ build_script:
   cmake c:\projects\source -G "Visual Studio 15"
   
   cmake --build . --config "Release"
+
+build_script:
+  # build
+  - |-
+    %MINGW32% set PATH=c:\mingw\bin;%PATH%
+    cd %APPVEYOR_BUILD_FOLDER%
+    cmake -DCMAKE_PREFIX_PATH=%PREFIX% %CMAKE_ARGS% .
+    cmake --build .
+    %MINGW32% type FindSDL2PP.cmake
+    %MINGW32% type sdl2pp.pc
+  # tests; PATH here lists library search paths
+  - |-
+    set PATH=%PREFIX%\lib;%PATH%
+    %MSVC% set PATH=%APPVEYOR_BUILD_FOLDER%\Debug;%PATH%
+    %MINGW32% set PATH=%APPVEYOR_BUILD_FOLDER%;%PATH%
+    ctest -V
 test_script:
 - cmd: ctest -C Debug
 
