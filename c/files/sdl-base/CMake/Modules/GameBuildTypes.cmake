@@ -3,36 +3,16 @@ if(DEFINED __GAME_BUILD_TYPES_CMAKE__)
 endif(DEFINED __GAME_BUILD_TYPES_CMAKE__)
 set(__GAME_BUILD_TYPES_CMAKE__ TRUE)
 
-include(FindSIMD)
 
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wno-unused-parameter -maccumulate-outgoing-args -std=c99")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic -std=c99 -msse2 -msse3 -mavx -march=native")
 
-	foreach(simd_extension ${_available_simd_extensions})
-		if(simd_extension STREQUAL "sse2")
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
-		elseif(simd_extension STREQUAL "sse3")
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse3")
-		elseif(simd_extension STREQUAL "ssse3")
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mssse3")
-		elseif(simd_extension STREQUAL "sse4.1")
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
-		elseif(simd_extension STREQUAL "sse4.2")
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
-		elseif(simd_extension STREQUAL "avx")
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
-		elseif(simd_extension STREQUAL "avx2")
-			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
-	endforeach(simd_extension)
-# if lower versions don't support, then axe them
-	_check_adding_compiler_flag("-fno-omit-frame-pointer" DEBUG)
-	_check_adding_compiler_flag("-fsanitize=address" DEBUG)
-	_check_adding_compiler_flag("-fsanitize=undefined" DEBUG)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG_BUILD -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined")
 	
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -ggdb3 -g3 -O0")
-	  set(CMAKE_C_FLAGS_MINSIZEREL "-Os -ffast-math -DNDEBUG -s -fmerge-all-constants")
-	  set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -ffast-math -DNDEBUG -ggdb3 -g3 -fmerge-all-constants")
-	  set(CMAKE_C_FLAGS_RELEASE "-O3 -ffast-math -DNDEBUG -fmerge-all-constants")
+	  set(CMAKE_C_FLAGS_MINSIZEREL "-Os -ffast-math -DRELEASE_BUILD -s -fmerge-all-constants")
+	  set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -ffast-math -DRELEASE_BUILD -ggdb3 -g3 -fmerge-all-constants")
+	  set(CMAKE_C_FLAGS_RELEASE "-O3 -ffast-math -DRELEASE_BUILD -fmerge-all-constants")
 
 	  set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s")
 	  set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "-s")
@@ -45,9 +25,6 @@ if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -funsafe-loop-optimizations")
     set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -funsafe-loop-optimizations")
 
-
-
-
 	if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
 		_check_adding_compiler_flag("-fsanitize=leak" DEBUG)
 	
@@ -59,17 +36,7 @@ if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
 	
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 
-  if (${CEN64_ARCH_SUPPORT} MATCHES "SSE2")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D__SSE2__")
-  elseif (${CEN64_ARCH_SUPPORT} MATCHES "SSSE3")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D__SSE2__ /D__SSE3__ /D__SSSE3__")
-  elseif (${CEN64_ARCH_SUPPORT} MATCHES "SSE3")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D__SSE2__ /D__SSE3__")
-  elseif (${CEN64_ARCH_SUPPORT} MATCHES "SSE4.1")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D__SSE2__ /D__SSE3__ /D__SSSE3__ /D__SSE4_1__")
-  elseif (${CEN64_ARCH_SUPPORT} MATCHES "AVX")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D__SSE2__ /D__SSE3__ /D__SSSE3__ /D__SSE4_1__ /arch:AVX")
-  endif ()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D__SSE2__ /D__SSE3__ /arch:AVX")
 
 endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 
