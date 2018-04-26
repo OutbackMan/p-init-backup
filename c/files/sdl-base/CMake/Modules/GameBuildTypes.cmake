@@ -3,9 +3,8 @@ if(DEFINED __GAME_BUILD_TYPES_CMAKE__)
 endif(DEFINED __GAME_BUILD_TYPES_CMAKE__)
 set(__GAME_BUILD_TYPES_CMAKE__ TRUE)
 
-
 if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic -std=c99 -msse2 -msse3 -mavx -march=native")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic -std=c99 -msse2 -msse3 -march=native")
 
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG_BUILD -fno-omit-frame-pointer -fsanitize=address -fsanitize=undefined")
 	
@@ -36,7 +35,10 @@ if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU|Clang")
 	
 elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D__SSE2__ /D__SSE3__ /arch:AVX")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /D__SSE2__ /D__SSE3__")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_DEBUG_FLAGS} /ZI")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_RELEASE_FLAGS} /Zi")
+	set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_C_RELEASE_FLAGS} /debug")
 
 endif ("${CMAKE_C_COMPILER_ID}" STREQUAL "MSVC")
 

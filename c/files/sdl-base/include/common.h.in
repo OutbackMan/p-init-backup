@@ -19,6 +19,7 @@ License:
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <signal.h>
 
 /******************************************************************************
  * CMAKE DEFINITIONS
@@ -28,11 +29,6 @@ License:
 #cmakedefine GAME_BUG_REPORT_ADDRESS "@GAME_BUG_REPORT_ADDRESS@"
 #cmakedefine GAME_NAME "@GAME_NAME@"
 #cmakedefine GAME_CREATOR "@GAME_CREATOR@"
-#cmakedefine GAME_ARCH "@GAME_ARCH@"
-#cmakedefine GAME_ARCH_SUPPORT "@GAME_ARCH_SUPPORT@"
-#cmakedefine GAME_BUILD_MODE "@GAME_BUILD_MODE"
-#cmakedefine GAME_DEBUG_BUILD "@GAME_DEBUG_BUILD"
-#cmakedefine GAME_RELEASE_BUILD "@GAME_RELEASE_BUILD"
 
 /******************************************************************************
  * COMMON MACROS
@@ -51,6 +47,11 @@ License:
 		goto __exit; \
 	} while (0);
 
+#if GAME_BUILD_MODE_DEBUG
+#define GAME_BREAKPOINT() raise(SIGABRT);
+#else
+#define GAME_BREAKPOINT() (void)0;
+#endif
 
 /******************************************************************************
  * COMMON TYPEDEFS

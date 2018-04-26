@@ -46,47 +46,9 @@ target_include_directories(name PUBLIC
 	"${PROJECT_SOURCE_DIR}/include"
 )
 
-# use flare-engine FindSDL2 variants
-# neovim for libuv
-find_package(SDL2)
-if(NOT SDL2_FOUND)
-	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
-else(NOT SDL2_FOUND)
-	target_include_directories(name ${SDL2_INCLUDE_DIRS})
-	target_link_libraries(name ${SDL2_LIBRARIES})
-endif(NOT SDL2_FOUND)
-
-find_package(SDL2_ttf)
-if(NOT SDL2TTF_FOUND)
-	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
-else(NOT SDL2TTF_FOUND)
-	target_include_directories(name ${SDL2_ttf_INCLUDE_DIRS})
-	target_link_libraries(name ${SDL2_ttf_LIBRARIES})
-endif(NOT SDL2TTF_FOUND)
-
-find_package(SDL2_ttf)
-if(NOT SDL2TTF_FOUND)
-	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
-else(NOT SDL2TTF_FOUND)
-	target_include_directories(name ${SDL2_ttf_INCLUDE_DIRS})
-	target_link_libraries(name ${SDL2_ttf_LIBRARIES})
-endif(NOT SDL2TTF_FOUND)
-
-find_package(SDL2_ttf)
-if(NOT SDL2TTF_FOUND)
-	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
-else(NOT SDL2TTF_FOUND)
-	target_include_directories(name ${SDL2_ttf_INCLUDE_DIRS})
-	target_link_libraries(name ${SDL2_ttf_LIBRARIES})
-endif(NOT SDL2TTF_FOUND)
-
-find_package(SDL2_ttf)
-if(NOT SDL2TTF_FOUND)
-	message(FATAL_ERROR "Cannot find required sdl2_ttf.")
-else(NOT SDL2TTF_FOUND)
-	target_include_directories(name ${SDL2_ttf_INCLUDE_DIRS})
-	target_link_libraries(name ${SDL2_ttf_LIBRARIES})
-endif(NOT SDL2TTF_FOUND)
+find_package(SDL2 REQUIRED)
+target_include_directories(name ${SDL2_INCLUDE_DIRS})
+target_link_libraries(name ${SDL2_LIBRARIES})
 
 ################################################################################
 # CTEST CONFIGURATION                                                          #
