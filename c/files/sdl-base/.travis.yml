@@ -185,4 +185,4 @@ before_script:
 script:
   - cmake .
   - cmake --build . -- -j2
-  - ctest -j2
+  - ctest -C Release -j2

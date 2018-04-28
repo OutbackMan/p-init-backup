@@ -210,13 +210,28 @@ matrix:
 # java activity (in android activity is the smallest action that can be taken) invokes our c code
 # so project in android java project with c support code -> produce .apk
 
+
 # FROM GITHUB android-readme.md
 # mv android-project/ game-android/
 # only support builds on linux and macosx
+language: android
+android:
+  components:
+    - tools
+	- platform-tools
+	- tools # necessary for most recent
+    - build-tools-26.0.2
+	- android-26
+os: linux
+jdk: oraclejdk8
+install:
+  - echo y | sdkmanager "ndk-bundle"
 
-# For 
-
-
+# have to compile into macosx 'framework', i.e. dynamic library and others
+# ios sdk 7+
+language: objective-c
+script:
+  - xcodebuild
 
 
 

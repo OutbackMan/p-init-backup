@@ -60,31 +60,12 @@ set(_game_test_suites
 )
 # specify the tests for the suites
 set(collision_tests 1 2 3 4)
-set(physics_tests "inertia" 2 3 4)
+set(physics_tests "test_inertia" 2 3 4)
 
 # aggregate test suite source files
 foreach(game_test_suite ${_game_test_suites))
 	set(_game_test_suite_sources ${_game_test_suite_sources} test/${game_test_suite}TestSuite.c)
 endforeach(game_test_suite)
-int collisionTestSuite(int argc, char** argv)
-{
-	if (game_strcmp(argv[1], "test_name")) {
-		test_name();		
-	} else if () {
-		// ...		
-	}
-	return 0;
-}
-
-int my_strcmp(const char* s1, const char* s2)
-{
-	while (*s1 != NULL && (*s1 == *s2)) {
-		++s1;
-		++s2;
-	}	
-
-	return (*s1 - *s2);
-}
 
 create_test_sourcelist(project_source_files test_driver_name test_suite_source_files)
 add_executable(test_driver_name ${project_source_files} src/utils/helpers.c)
@@ -93,14 +74,11 @@ add_executable(test_driver_name ${project_source_files} src/utils/helpers.c)
 foreach(game_test_suite ${_game_test_suites})
 	foreach(game_test ${${game_test_suite}_tests})
 		add_test(NAME ${game_test_suite}_${game_test}
-			COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_driver_name ${game_test_suite}TestSuite ${game_test})
+			COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_driver_name ${game_test_suite}TestSuite ${game_test_suite}_${game_test})
 		)
 	endforeach(game_test)
 endforeach(game_test_suite)
-
-
 # then run with: ctest -R collisions
-
 
 ################################################################################
 # CPACK CONFIGURATION                                                          #
