@@ -46,7 +46,7 @@ int main(int argc, char* argv[argc + 1])
 
 		unsigned update_step_counter = 0;
 		while (total_delta_time > 0.0f && update_step_counter < MAX_STEPS) {
-			float delta_time = min(total_delta_time, MAX_DELTA_TIME);
+			float delta_time = GAME_MIN_REAL32(total_delta_time, MAX_DELTA_TIME);
 			total_delta_time -= delta_time;
 
 			game_update(&game, delta_time);
