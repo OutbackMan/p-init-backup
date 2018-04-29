@@ -6,28 +6,35 @@
 
 int main(int argc, char* argv[argc + 1])
 {
-	int leave_status = GAME_DEFAULT_INITIALISER;
+	GAME_STATUS leave_status = GAME_ENTERED;
 
 #if defined(DEBUG_BUILD)
-	game__log_init_logging((GAME_LOG_MODE)DEBUG_MODE, NULL);
+	game_log_init_logging((GAME_LOG_MODE)DEBUG_MODE, NULL);
 #else
 	FILE* game_log_file = fopen("game.log", "a");
-	game__log_init_logging((GAME_LOG_MODE)RELEASE_MODE, game_log_file);
+	game_log_init_logging((GAME_LOG_MODE)RELEASE_MODE, game_log_file);
 #endif
-
-	const unsigned MAX_UPDATE_STEPS = 6;
+	
 	const real32 DESIRED_FPS = 60.0f;
 	const real32 DESIRED_FRAME_TIME = 1000.0f / DESIRED_FPS;
+	
+	GAME_ArgTable game_arg_table = game_arg_table_default_arg_table;
+	GAME_STATUS game_arg_table_parse_status = GAME_DEFAULT_INITIALISER;
+	if ((game_arg_table_parse_status = game_arg_table_parse(&game_arg_table)) != SUCCESS) {
+		GAME_LOG_WARN("Unable to parse user supplied command line options for game. Using default values...\nStatus: %s", game_status_str(game_arg_table_parse_status));
+	}
+	
+	const unsigned MAX_UPDATE_STEPS = 6;
 	const real32 MAX_DELTA_TIME = 1.0f;
 
-	u32	previous_frame_tick_count = SDL_GetTicks();
+	u32 previous_frame_tick_count = SDL_GetTicks();
 
-	Game game = GAME_DEFAULT_INITIALISER;	
+	Game game_instance = GAME_DEFAULT_INITIALISER;	
 
-	int game_start_status = GAME_DEFAULT_INITIALISER;
-	if ((game_start_status = game_start(&game)) != SUCCESS) {
-		GAME_LOG_FATAL("Game unable to start! Status: %s", game_status_str(game_start_status));
-		return EXIT_FAILURE;	
+	GAME_STATUS game_start_status = GAME_DEFAULT_INITIALISER;
+	if ((game_start_status = game_start(&game_instance, &game_arg_table)) != SUCCESS) {
+		GAME_LOG_FATAL("Unable to start Game.\nStatus: %s", game_status_str(game_start_status));
+		return EXIT_FAILURE;
 	}
 
 	while (game_is_running(&game)) {
@@ -50,13 +57,13 @@ int main(int argc, char* argv[argc + 1])
 	}
 
 	game_exit(&game);
-
-// __leave:
+	
 #if defined(RELEASE_BUILD)
-	if (game_log_file != NULL) {
-		fclose(game_log_file);		
-	}
+		if (game_log_file != NULL) {
+			fclose(game_log_file);		
+		}
 #endif
-
+	
 	return EXIT_SUCCESS;
+
 }
