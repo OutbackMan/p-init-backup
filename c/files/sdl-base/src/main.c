@@ -1,5 +1,6 @@
 #include "common.h"
 #include "core/game.h"
+#include "utils/status-codes.h"
 #include "utils/log.h"
 
 #include <SDL2/SDL.h>
