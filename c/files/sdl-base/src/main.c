@@ -25,6 +25,12 @@ int main(int argc, char* argv[argc + 1])
 		GAME_LOG_WARN("Unable to parse user supplied command line options for game. Using default values...\nStatus: %s", game_status_str(game_arg_table_parse_status));
 	}
 	
+	if (game_arg_table.help.value == true) {
+		game_args_print_syntax();
+		puts("program description");
+		game_args_print_glossary();
+	}
+
 	Game game_instance = GAME_DEFAULT_INITIALISER;
 		
 	const unsigned MAX_UPDATE_STEPS = 6;

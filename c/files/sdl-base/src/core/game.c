@@ -1,4 +1,5 @@
-#include <SDL2/SDL.h>
+#include "core/game.h"
+#include "common.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,16 +14,6 @@ INTERNAL inline u32 sdl_colour_to_bitmask(SDL_Colour* colour)
 	return ((colour->a << 24) | (colour->r << 16) | 
 				(colour->g << 8) | colour->b);	
 }
-
-enum {
-	SENTINEL_CODE = -1,
-	SUCCESS_CODE = 1,
-    FAILURE_CODE = 0,
-    WINDOW_FAILURE_CODE = 1,
-    RENDERER_FAILURE_CODE = 2,
-    TEXTURE_FAILURE_CODE = 3,
-    SURFACE_FAILURE_CODE = 4,
-};
 
 INTERNAL STATUS_CODE game__set_surface_pixel_colour(SDL_Surface* game_surface, int x, int y, SDL_Color* colour)
 {
@@ -327,7 +318,6 @@ bool does_tetromino_fit(int tetromino_id, int current_rotation, int top_x, int t
 	return true;	
 }
 
-// cross platform coverage (codecov), profiler (easy profiler)
 // 1. ASSETS: items, map
 
 /*
@@ -337,11 +327,14 @@ game {
 }
 */
 
+GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
+{
+	GAME_ASSERT(game != NULL, "Game is null");	
+	GAME_ASSERT(arg_table != NULL, "Argtable is null");	
 
-// ISA from intel architecture reference
-// cycles may be from other processes due to the CPU swapping
-// may downclock or upclock itself
-// only indicative of how much work CPU did
+		
+		
+}
 
 // require SDL_ttf for outputting numbers, text, etc. (check unicode support)
 int main(int argc, char* argv[argc + 1])

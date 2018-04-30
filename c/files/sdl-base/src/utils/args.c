@@ -1,90 +1,55 @@
-enum {
-	AGE_ARG,
-	NAME_ARG,
-	HELP_ARG
-};
+typedef enum {
+	ARG_INT,
+	ARG_STR,
+	ARG_BOOL
+} GAME_ARG_TYPE;
 
 typedef struct {
-	arg_type_t arg_type;
+	GAME_ARG_TYPE arg_type;
 	union {
 		int arg_int_value;
 		const char* arg_str_value;
 		bool arg_bool_value;
 	}
 	const char* arg_help_message;
-} GameArg;
+} GAME__ArgInstance;
 
 typedef struct {
-	size_t num_args;
-	GameArg* args;
-} GameArgs;
+	GAME__ArgInstance arg_help;
+	GAME__ArgInstance arg_version;
+} GAME_ArgTable;
 
-int create_int_arg(GameArg* arg, int value, const char* msg)
-{
-	GAME_ASSERT(arg != NULL, "msg");
-
-	arg->arg_type = ARG_INT;
-	arg->arg_value = value;
-
-	arg->arg_help_message = calloc(sizeof(char), strlen(msg));
-	if (arg->arg_help_message == NULL) {
-		SYS_ERROR_MSG()
-		return FAILURE;		
-	}
-	strcpy(arg->arg_help_message, msg);
-
-	return SUCCESS;
-}
-
-int game__create_default_args(GameArgs* game_args)
-{
-	GAME_ASSERT(game_args != NULL);
-
-	int leave_code = DEFAULT_INITIALISER;
-
-	const size_t NUM_ARGUMENTS = 5;
-	game_args->num_args = NUM_ARGUMENTS;
-
-	game_args->args = calloc(sizeof(GameArgs), NUM_ARGUMENTS);
-	if (game_args->args == NULL) {
-		GAME_LEAVE(FAILURE);	
-	}
+GAME_ArgTable game_arg_table_default_arg_table = {
+	.arg_help = {
+		.arg_type = ARG_BOOL,
+		.arg_bool_value = false,
+		.arg_help_message = "Display this help message and quit."
+	},
+	.arg_version = {
+		.arg_type = ARG_BOOL,
+		.arg_bool_value = false,
+		.arg_help_message = "Display version."
+	},
+	.save_file = {
 		
-	int arg_status = DEFAULT_INITIALISER;
-	// alternative looping as this will affect base pointer
-	if ( (arg_status = create_arg(++game_args->args, type, value, help)) != SUCCESS ) {
-		GAME_LEAVE(FAILURE);		
 	}
+};
 
-	GAME_LEAVE(SUCCESS);
-	
-	__leave:
-		if (arg_status == SUCCESS) destroy_arg(arg);
-		if (game_args != NULL) free(game_args);
-		return leave_code;
+void game_args_print_syntax(void)
+{
+	fprintf(stderr, "Usage: %s [-H] [-V]\n", GAME_BINARY_STRING);
 }
 
-void game__destroy_default_args(GameArgs* game_args)
+void game_args_print_glossary(void)
 {
-	GAME_ASSERT(game_args != NULL, "msg");
-
-	for (size_t arg_index = 0; arg_index < game_args->num_args; ++arg_index) {
-		destroy_arg(&game_args[arg_index]);
-	}
-
-	destroy_args(game_args);
+	fprintf(stderr, "-H display this help and exit.");
 }
 
-int game__parse_args(GameArgs* game_args, int argc, char* argv[argc + 1])
-{
-	GAME_ASSERT(game_args != NULL, "msg");
-	
-	int leave_code = 0;
-	
-	if (game__get_default_args(game_args) != SUCCESS) {
-		GAME_LEAVE(FAILURE);		
-	}
 
+int game_args_handle(GAME_ArgTable* arg_table, int argc, char* argv[argc + 1])
+{
+	GAME_ASSERT(arg_table != NULL, "msg");
+	
 #if defined(_WIN32)
 	const char ARG_START = '\\';
 #else
@@ -94,32 +59,29 @@ int game__parse_args(GameArgs* game_args, int argc, char* argv[argc + 1])
 	for (size_t arg_index = 1; arg_index < argc && argv[arg_index][0] == ARG_START; ++arg_index) {
 		for (char* arg_char = argv[arg_index] + 1; *arg_char != '\0'; ++arg_char) {
 			switch (*arg_char) {
-			case 'I':	
-				if (parse_int_arg(game_args[ARG_WIDTH], arg_char) != SUCCESS) {
-					GAME_LEAVE(FAILURE);
-				}
+			case 'H':	
+				arg_table->arg_help.value = true;
 				break;
-			case 'S':
-				if (parse_str_arg(game_args->name, arg_char, 40) != SUCCESS) {
-					GAME_LEAVE(FAILURE);		
-				}
-				break;
-			case 'H':
-				if (parse_bool_arg()) {
-					// Usage: game.exe [-H] [-Sstring] [-I80]
-					// game description
-					// -H display this help and exit	
-					args_print_syntax(stdout, argument_list); 
-					puts("program description");
-					args_print_glossary(argument_list);
-				}
+			case 'V':
+				arg_table->arg_version.value = true;
 				break;
 			default:
-
+				fprintf(stderr, "Illegal option %c\n", *arg_char);
+				argc = -1;
+				break;
 			}		
 		}
 	}
-	// display errors
+
+	if (argc == -1) {
+		// usage ...
+		return;
+	} 
+
+	// have to handle args like help outside function to faciliate memory cleanup
+		// perform		
+		// logic		
+		// perform any actions, e.g. print help
 }
 
 int handle_int_arg(int* int_arg, int int_arg_min_value, int int_arg_max_value, char* arg_char)
@@ -168,22 +130,4 @@ int handle_str_arg(const char* str_arg, size_t str_arg_max_length, char* arg_cha
 	str_arg[str_arg_length] = '\0';
 
 	return SUCCESS;
-}
-
-int main(int argc, char** argv)
-{
-	int leave_code = DEFAULT_INITIALISER;
-
-	GameArgs game_args = DEFAULT_INTIALISER;
-	if (game__handle_args(&game_args, argc, argv) != SUCCESS) {
-		GAME_LEAVE(FAILURE);		
-	}
-
-	// accessed through
-	game_args.age 
-
-
-	game__free_args(&game_args);
-
-	return 0;	
 }
