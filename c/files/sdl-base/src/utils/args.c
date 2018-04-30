@@ -1,16 +1,16 @@
 typedef enum {
 	ARG_INT,
-	ARG_STR,
-	ARG_BOOL
+	ARG_BOOL,
+	ARG_FILE
 } GAME_ARG_TYPE;
 
 typedef struct {
 	GAME_ARG_TYPE arg_type;
 	char option_char;
 	union {
-		int default_value;
-		const char* default_value;
-		bool default_value;
+		int value;
+		bool value;
+		FILE* value;
 	}
 	const char* help_message;
 } GAME__ArgInstance;
@@ -19,6 +19,9 @@ typedef struct {
 	size_t length;
 	GAME__ArgInstance arg_help;
 	GAME__ArgInstance arg_version;
+	GAME__ArgInstance arg_save_file;
+	GAME__ArgInstance arg_width;
+	GAME__ArgInstance arg_height;
 } GAME_ArgTable;
 
 #define GAME_ARG_TABLE_ITERATE(arg_index, arg) \
@@ -30,7 +33,7 @@ typedef struct {
 		)
 
 GAME_ArgTable game_args_arg_table = {
-	.length = 4,
+	.length = 5,
 	.arg_help = {
 		.type = ARG_BOOL,
 		.option_char = 'H',
@@ -44,7 +47,7 @@ GAME_ArgTable game_args_arg_table = {
 		.help_message = "Display version information and exit"
 	},
 	.save_file = {
-		.type = ARG_STR,
+		.type = ARG_FILE,
 		.option_char = 'S',
 		.default_value = GAME_LNAME".sav",
 		.help_message = "Specify location of save file"
@@ -85,12 +88,12 @@ static const char* game_args__get_arg_type_string(GAME_ARG_TYPE arg_type)
 {
 	GAME_ASSERT(arg != NULL, "msg");
 
-	if (arg_type == ARG_BOOL) {
-		return "";
-	} else if (arg_type == ARG_INT) {
+	if (arg_type == ARG_INT) {
 		return "<int>"; 	
+	} else if (arg_type == ARG_FILE) {
+		return "<file>";
 	} else {
-		return "<string>";
+		return "";
 	}
 }
 
@@ -98,18 +101,18 @@ void game_args_print_glossary(FILE* output_stream)
 {
 	GAME_ASSERT(output_stream != NULL, "msg");
 
-	for (size_t arg_index = 1; arg_index < game_args_default_arg_table.length; ++arg_index) {
+	GAME_ARG_TABLE_ITERATE(_, arg) {
 		fprintf(
 			output_stream, 
-			"%-25s %s.\n", 
-			game_args_default_arg_table[arg_index].option_char,
-			game_args_default_arg_table[arg_index].help_message
+			"-%c%-25s %s.\n", 
+			arg.option_char,
+			game_args__get_arg_type_string(arg.type),
+			arg.help_message
 		);
 	}
 }
 
-
-int game_args_handle(int argc, char* argv[argc + 1])
+void game_args_handle(int argc, char* argv[argc + 1])
 {
 #if defined(_WIN32)
 	const char ARG_START = '\\';
@@ -119,68 +122,46 @@ int game_args_handle(int argc, char* argv[argc + 1])
 
 	for (size_t arg_index = 1; arg_index < argc && argv[arg_index][0] == ARG_START; ++arg_index) {
 		for (char* arg_char = argv[arg_index] + 1; *arg_char != '\0'; ++arg_char) {
-			GAME_ARG_TABLE_ITERATE(arg_index, arg) {
+			GAME_ARG_TABLE_ITERATE(_, arg) {
 				if (*arg_char == arg.option_char) {
-					game_args__parse_arg(&args);	
+					game_args__parse_arg(&args, arg_char);	
 				} else {
 					fprintf(stderr, "Illegal option %c\n", *arg_char);
-					fprintf(stderr, "Try '%s -H' for more information.\n", GAME_BINARY_STRING);
-					argc = -1; // or return;
+					fprintf(stderr, "Try '%s %cH' for more information.\n", GAME_BINARY_STRING, ARG_START);
+					return;
 				}
 			}	
 		}
 	}
-
-	// have to handle args like help outside function to faciliate memory cleanup
-		// perform		
-		// logic		
-		// perform any actions, e.g. print help
 }
 
-int handle_int_arg(int* int_arg, int int_arg_min_value, int int_arg_max_value, char* arg_char)
+void game_args__parse_arg(GAME__ArgInstance* arg, char* arg_char)
 {
-	// for arguments that cannot be null, use asserts to invoke undefined behaviour and to keep user honest
-	GAME_ASSERT(arg_char != NULL, "msg");
+	GAME_ASSERT(arg != NULL, "msg");	
 
-	// we specifically handle the argument values that we document the function supports
-	if (min_int_value > max_int_value) {
-		max_int_value = min_int_value;		
-	}
+	switch(arg.type) {
+	case ARG_INT:
+		while (isdigit(*arg_char)) {
+			arg.value *= 10;
+			arg.value += *arg_char - '0';
+			++arg_char;
+		}	
+		break;
+	case ARG_BOOL:
+		arg.value = !arg.value;
+		++arg_char;	
+		break;
+	case ARG_FILE:
+		const char* str_arg_start = arg_char;
 
-	while (isdigit(*arg_char)) {
-		*int_arg *= 10;
-		*int_arg += *arg_char - '0';
-		++arg_char;
-	}	
-	
-	if (*int_arg < min_int_value || *int_arg > max_int_value) {
-		printf("GAME: invalid option %s. Try running PROG -H for more information\n");
-		return EARG_INVAL;
-	} else {
-		return SUCCESS;		
-	}
-}
-
-int handle_str_arg(const char* str_arg, size_t str_arg_max_length, char* arg_char)
-{
-	GAME_ASSERT(arg_char != NULL, "msg");
-
-	const char* str_arg_start = arg_char;
-	size_t str_arg_length = 0;
-
-	while (isalnum(*arg_char) || *arg_char == '_') {
-		++arg_char;
-		++str_arg_length;
-	}	
+		while (isalnum(*arg_char) || *arg_char == '_') {
+			++arg_char;
+		}	
 		
-	str_arg = calloc(sizeof(char), str_arg_length + 1);
-	if (str_arg == NULL) {
-		// perror()
-		return ENO_MEM;		
+		char file_name[32] = GAME_DEFAULT_INITIALISER;
+		strncpy(file_name, str_arg_start, (size_t)(str_arg_start - arg_char));
+			
+		arg.value = fopen(file_name, "a");
+		break;	
 	}
-
-	strncpy(str_arg, str_arg_start, str_arg_length);
-	str_arg[str_arg_length] = '\0';
-
-	return SUCCESS;
 }

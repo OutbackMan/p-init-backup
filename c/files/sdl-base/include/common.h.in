@@ -29,6 +29,7 @@ License:
 #cmakedefine GAME_BUG_REPORT_ADDRESS "@GAME_BUG_REPORT_ADDRESS@"
 #cmakedefine GAME_NAME "@GAME_NAME@"
 #cmakedefine GAME_BINARY_STRING "@GAME_BINARY_STRING@"
+#cmakedefine GAME_DESCRIPTION "@GAME_DESCRIPTION@"
 #cmakedefine GAME_CREATOR "@GAME_CREATOR@"
 
 /******************************************************************************

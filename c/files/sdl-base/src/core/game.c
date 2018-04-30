@@ -1,4 +1,8 @@
 #include "core/game.h"
+typedef struct {
+	// renderer, surface, window, etc.	
+} Game;
+
 #include "common.h"
 
 #include <stdio.h>
@@ -38,10 +42,6 @@ INTERNAL STATUS_CODE game__set_surface_pixel_colour(SDL_Surface* game_surface, i
 
 	return SUCCESS_CODE;
 }
-
-// consider offsetting so as to highlight border, e.g: (y + 2) * width + (x + 2)
-#define UBORDER_COLLISION(row, col) \
-	((col == 0) || (col == WINDOW_WIDTH - 1) || (row == WINDOW_HEIGHT - 1))
 
 INTERNAL STATUS_CODE game__set_starting_surface(SDL_Surface* game_surface)
 {
@@ -88,135 +88,6 @@ INTERNAL STATUS_CODE game__resize_texture(SDL_Texture* game_texture, SDL_Rendere
 	}
 
 	return SUCCESS_CODE;
-}
-
-INTERNAL STATUS_CODE game_start(const unsigned game_width, const unsigned game_height)
-{
-	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
-
-	int exit_code = SENTINEL_CODE;
-
-	SDL_Window* game_window = NULL;
-	SDL_Renderer* game_renderer = NULL;
-	SDL_Surface* game_surface = NULL;
-	SDL_Texture* game_texture = NULL;
-
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to initialise game SDL backend: %s\n", SDL_GetError());	
-		exit_code = FAILURE_CODE;
-		goto __exit;
-	}
-
-	// Append compiler and architecture info to window title, e.g.
-	// SDL_SetWindowTitle(window, "GAME [gcc-4.9.2 - x86/64](DEBUG) - 35fps")
-	game_window = SDL_CreateWindow("game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-									game_width, game_height, SDL_WINDOW_RESIZABLE);
-	
-	if (game_window == NULL) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create game window: %s\n", SDL_GetError());	
-		exit_code = WINDOW_FAILURE_CODE;
-		goto __exit;
-	}
-
-	game_renderer = SDL_CreateRenderer(game_window, -1, 0);
-
-	if (game_renderer == NULL) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create game renderer: %s\n", SDL_GetError());	
-		exit_code = RENDERER_FAILURE_CODE;
-		goto __exit;
-	}
-
-	game_surface = SDL_CreateRGBSurface(0, game_width, game_height, 32,
-									0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-
-	if (game_surface == NULL) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create game surface: %s\n", SDL_GetError());	
-		exit_code = SURFACE_FAILURE_CODE;
-		goto __exit;
-	}
-
-	if (game__set_starting_surface(game_surface) == SURFACE_FAILURE_CODE) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to set starting game surface: %s\n", SDL_GetError());	
-		exit_code = SURFACE_FAILURE_CODE;
-		goto __exit;
-	}
-
-	game_texture = SDL_CreateTexture(game_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-											game_width, game_height);
-
-	if (game_texture == NULL) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create game texture: %s\n", SDL_GetError());	
-		exit_code = TEXTURE_FAILURE_CODE;
-		goto __exit;
-	}
-
-	bool game_is_running = true;
-
-	int current_piece = 0;
-	int current_rotation = 0;
-	int current_x = FIELD_WIDTH / 2;
-	int current_y = 0;
-
-	while (game_is_running) {
-		SDL_Event event = {0};
-		while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-			 case SDL_QUIT:
-			 {
-				game_is_running = false;	 
-			 } break;
-
-			 case SDL_WINDOWEVENT:
-			 {
-				switch (event.window.event) {
-				 case SDL_WINDOWEVENT_RESIZED:
-				 {
-					if (game__resize_texture(game_texture, game_renderer, event.window.data1, event.window.data2) != SUCCESS_CODE) {
-						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to resize game texture: %s\n", SDL_GetError());	
-						exit_code = TEXTURE_FAILURE_CODE;
-						goto __exit;
-					}
-				 } break;
-				 case SDL_WINDOWEVENT_EXPOSED:
-				 {
-					if (SDL_UpdateTexture(game_texture, NULL, game_surface->pixels, game_surface->pitch) < 0) {
-						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to update game texture: %s\n", SDL_GetError());	
-						exit_code = TEXTURE_FAILURE_CODE;
-						goto __exit;
-					}
-					if (SDL_RenderClear(game_renderer) < 0) {
-						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to clear game renderer: %s\n", SDL_GetError());	
-						exit_code = RENDERER_FAILURE_CODE;
-						goto __exit;
-					}
-					if (SDL_RenderCopy(game_renderer, game_texture, NULL, NULL) < 0) {
-						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to copy to game renderer: %s\n", SDL_GetError());	
-						exit_code = RENDERER_FAILURE_CODE;
-						goto __exit;
-					} 
-					SDL_RenderPresent(game_renderer);
-				 } break;
-				}
-			 } break;
-
-			 case SDL_KEYDOWN:
-			 {
-				SDL_Keycode entered_keycode = event.key.keysym.sym;
-				if (entered_keycode == SDLK_ESCAPE) {
-					game_is_running = false;
-				}
-			 } break;
-			} // end-event-switch	
-		} // end-event-while 
-	} // end-game-while	
-
-	__exit:
-		if (game_surface != NULL) SDL_FreeSurface(game_surface);
-		if (game_texture != NULL) SDL_DestroyTexture(game_texture);
-		if (game_renderer != NULL) SDL_DestroyRenderer(game_renderer);
-		if (game_window != NULL) SDL_DestroyWindow(game_window);
-		if (SDL_WasInit(SDL_INIT_VIDEO)) SDL_Quit(); // can also pass SDL_INIT_EVERYTHING
-		return exit_code;
 }
 
 // Assets
@@ -271,53 +142,6 @@ tetromino[6] = {
 	BG_COLOUR, RED, BG_COLOUR, BG_COLOUR
 };
 
-int tetromino_rotate(int original_x_index, int original_y_index, int angle_index)
-{
-	switch (angle_index % 4) {
-	 case 0:
-	 {
-		return original_y_index * 4 + original_x_index; // 0 degrees 
-	 } break;
-	 case 1:
-	 {
-		return 12 + original_y_index - (original_x_index * 4); // 90 degrees 
-	 } break;
-	 case 2:
-	 {
-		return 15 - (original_y_index * 4) - original_x_index; // 180 degrees 
-	 } break;
-	 case 3:
-	 {
-		return 3 - original_y_index + (original_x_index * 4); // 270 degrees 
-	 } break;
-	}
-
-	return 0;
-}
-
-bool does_tetromino_fit(int tetromino_id, int current_rotation, int top_x, int top_y)
-{
-	// texture size
-	// texture colour information, i.e. what colour its 'body' is
-	// SDL_Colour comparison
-	for (int i = 0; i < 4; ++i) {
-		for (int j = 0; j < 4; ++j) {
-			int index = tetromino_rotate(i, j, current_rotation);	
-			int field_index = (top_y + j) * FIELD_WIDTH + (top_x + i);
-
-			if (i + top_x >= 0 && i + top_x < FIELD_WIDTH) {
-				if (j + top_y >= 0 && j + top_y < FIELD_HEIGHT) {
-					if (tetromino[tetromino_id][index] == PIECE_COLOUR && field[index] != BG) {
-						return false;
-					}
-				}		
-			}
-		}		
-	}
-
-	return true;	
-}
-
 // 1. ASSETS: items, map
 
 /*
@@ -327,62 +151,120 @@ game {
 }
 */
 
+GAME_STATUS game_handle_events(Game* game)
+{
+		SDL_Event event = {0};
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+			case SDL_QUIT:
+				game.is_running = false;	 
+			break;
+			case SDL_WINDOWEVENT:
+				switch (event.window.event) {
+				 case SDL_WINDOWEVENT_RESIZED:
+					if (game__resize_texture(game_texture, game_renderer, event.window.data1, event.window.data2) != SUCCESS_CODE) {
+						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to resize game texture: %s\n", SDL_GetError());	
+						exit_code = TEXTURE_FAILURE_CODE;
+						goto __exit;
+					}
+				 } break;
+				 case SDL_WINDOWEVENT_EXPOSED:
+				 {
+					if (SDL_UpdateTexture(game_texture, NULL, game_surface->pixels, game_surface->pitch) < 0) {
+						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to update game texture: %s\n", SDL_GetError());	
+						exit_code = TEXTURE_FAILURE_CODE;
+						goto __exit;
+					}
+					if (SDL_RenderClear(game_renderer) < 0) {
+						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to clear game renderer: %s\n", SDL_GetError());	
+						exit_code = RENDERER_FAILURE_CODE;
+						goto __exit;
+					}
+					if (SDL_RenderCopy(game_renderer, game_texture, NULL, NULL) < 0) {
+						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to copy to game renderer: %s\n", SDL_GetError());	
+						exit_code = RENDERER_FAILURE_CODE;
+						goto __exit;
+					} 
+					SDL_RenderPresent(game_renderer);
+				 } break;
+				}
+			 } break;
+
+			 case SDL_KEYDOWN:
+			 {
+				SDL_Keycode entered_keycode = event.key.keysym.sym;
+				if (entered_keycode == SDLK_ESCAPE) {
+					game_is_running = false;
+				}
+			 } break;
+			} // end-event-switch	
+		} // end-event-while 
+	} // end-game-while	
+
+	
+}
+
 GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 {
 	GAME_ASSERT(game != NULL, "Game is null");	
 	GAME_ASSERT(arg_table != NULL, "Argtable is null");	
-
 		
-		
-}
+	GAME_STATUS leave_status = GAME_DEFAULT_INITIALISER;
 
-// require SDL_ttf for outputting numbers, text, etc. (check unicode support)
-int main(int argc, char* argv[argc + 1])
-{
-	const unsigned GAME_WIDTH = 640;
-	const unsigned GAME_HEIGHT = 480;
-
-	Game game = {0};
-
-	game_init(&game, title, width, height);
-
-	game_start(&game);
-
-	// how many counter increments per second
-	uint64_t counter_frequency = SDL_GetPerformanceFrequency();
-	uint64_t last_counter = SDL_GetPerformanceCounter();
-	uint64_t end_counter = 0;
-	
-	uint64_t last_cycle_count = __rdtsc();
-
-	while (game_is_running(&game)) {
-		game_handle_events();
-		
-		game_update();
-		
-		// with semi-fixed we are simulating the logic of frames,
-		// so we technically still have the same fps as in fixed
-
-		uint64_t end_cycle_count = __rtdsc();
-		uint64_t mega_cycles_elapsed = (end_cycle_count - last_cycle_count) / 1000 * 1000;
-
-		end_counter = SDL_GetPerformanceQuery();
-
-		uint64_t counter_elapsed = end_counter - last_counter;
-
-		// multiplying by 1000 prevents result truncation to 0
-		uint64_t ms_per_frame = (1000 * counter_elapsed) / counter_frequency;
-		// dimensional analysis
-		uint64_t fps = (counter_frequency / counter_elapsed);
-
-		last_counter = end_counter;
-		last_cycle_count = end_cycle_count;
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		GAME_LOG_FATAL("Unable to initialise game SDL backend: %s\n", SDL_GetError());	
+		GAME_LEAVE(SDL_FAILURE);
 	}
 
-	game_exit();
+	const char* window_title = GAME_UNAME" ["GAME_COMPILER" - x86/64]("GAME_BUILD_MODE")";
+	game->window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+									arg_table->width->value, arg_table->height->value, SDL_WINDOW_RESIZABLE);
+	
+	if (game->window == NULL) {
+		GAME_LOG_FATAL("Unable to create game window: %s\n", SDL_GetError());	
+		GAME_LEAVE(SDL_FAILURE);
+	}
+
+	game->renderer = SDL_CreateRenderer(game_window, -1, 0);
+
+	if (game->renderer == NULL) {
+		GAME_LOG_FATAL("Unable to create game renderer: %s\n", SDL_GetError());	
+		GAME_LEAVE(SDL_FAILURE);
+	}
+
+	game_surface = SDL_CreateRGBSurface(0, game_width, game_height, 32,
+									0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+
+	if (game_surface == NULL) {
+		GAME_LOG_FATAL("Unable to create game surface: %s\n", SDL_GetError());	
+		GAME_LEAVE(SDL_FAILURE);
+	}
+
+	if (game__set_starting_surface(game_surface) == SURFACE_FAILURE_CODE) {
+		GAME_LOG_FATAL("Unable to set starting game surface: %s\n", SDL_GetError());	
+		GAME_LEAVE(SDL_FAILURE);
+	}
+
+	game_texture = SDL_CreateTexture(game_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+											game_width, game_height);
+
+	if (game_texture == NULL) {
+		GAME_LOG_FATAL("Unable to create game texture: %s\n", SDL_GetError());	
+		return SDL_FAILURE;
+	}
+
+	game->is_running = true;
+
+	return GAME_SUCCESS;
 }
 
-// src/linux/
-// include/unix/
-// #ifdef LINUX #include "unix/"
-// ensure functions have same interface
+void game_exit(Game* game)
+{
+	if (game->surface != NULL) SDL_FreeSurface(game_surface);
+	if (game->texture != NULL) SDL_DestroyTexture(game_texture);
+	if (game->renderer != NULL) SDL_DestroyRenderer(game_renderer);
+	if (game->window != NULL) SDL_DestroyWindow(game_window);
+	if (SDL_WasInit(SDL_INIT_EVERYTHING)) SDL_Quit();
+}
+
+
