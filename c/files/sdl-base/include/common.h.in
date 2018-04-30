@@ -49,6 +49,7 @@ License:
 		goto __exit; \
 	} while (0);
 
+#define GAME_SDL_NO_FLAGS 0
 // don't append ';' as these should be used like functions
 #if GAME_BUILD_MODE_DEBUG
 #define GAME_BREAKPOINT() raise(SIGABRT)

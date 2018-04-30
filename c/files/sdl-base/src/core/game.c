@@ -71,76 +71,22 @@ INTERNAL STATUS_CODE game__set_starting_surface(SDL_Surface* game_surface)
 	return SUCCESS_CODE;
 }
 
-INTERNAL STATUS_CODE game__resize_texture(SDL_Texture* game_texture, SDL_Renderer* game_renderer, int current_game_width, int current_game_height)
+INTERNAL STATUS_CODE game__resize_texture(Game* game, int current_game_width, int current_game_height)
 {
-	// Keep in production code unless a dramatic speed-up is noticed.
-	// However, assert to a log file instead of stdout.
-	assert(game_texture != NULL && game_renderer != NULL);
+	GAME_ASSERT(game != NULL, "msg");
 
 	SDL_DestroyTexture(game_texture);	
 
-	game_texture = SDL_CreateTexture(game_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+	game->texture = SDL_CreateTexture(game->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
 					current_game_width, current_game_height);
 
 	if (game_texture == NULL) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to resize game texture: %s\n", SDL_GetError());	
-		return TEXTURE_FAILURE_CODE;
+		GAME_LOG_FATAL("Unable to resize game texture: %s\n", SDL_GetError());
+		return SDL_FAILURE;
 	}
 
-	return SUCCESS_CODE;
+	return SUCCESS;
 }
-
-// Assets
-SDL_Color tetromino[7][16] = {0};
-
-tetromino[0] = {
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR
-};
-
-tetromino[1] = {
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, RED, RED, BG_COLOUR,
-	BG_COLOUR, RED, BG_COLOUR, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, BG_COLOUR, BG_COLOUR
-};
-
-tetromino[2] = {
-	BG_COLOUR, RED, BG_COLOUR, BG_COLOUR,
-	BG_COLOUR, RED, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, BG_COLOUR, BG_COLOUR
-};
-
-tetromino[3] = {
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, RED, RED, BG_COLOUR,
-	BG_COLOUR, RED, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, BG_COLOUR, BG_COLOUR
-};
-
-tetromino[4] = {
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, RED, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, BG_COLOUR, BG_COLOUR
-};
-
-tetromino[5] = {
-	BG_COLOUR, BG_COLOUR, BG_COLOUR, BG_COLOUR,
-	BG_COLOUR, RED, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
-	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR
-};
-
-tetromino[6] = {
-	BG_COLOUR, BG_COLOUR, BG_COLOUR, BG_COLOUR,
-	BG_COLOUR, RED, RED, BG_COLOUR,
-	BG_COLOUR, RED, BG_COLOUR, BG_COLOUR,
-	BG_COLOUR, RED, BG_COLOUR, BG_COLOUR
-};
 
 // 1. ASSETS: items, map
 
@@ -163,27 +109,23 @@ GAME_STATUS game_handle_events(Game* game)
 				switch (event.window.event) {
 				 case SDL_WINDOWEVENT_RESIZED:
 					if (game__resize_texture(game_texture, game_renderer, event.window.data1, event.window.data2) != SUCCESS_CODE) {
-						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to resize game texture: %s\n", SDL_GetError());	
-						exit_code = TEXTURE_FAILURE_CODE;
-						goto __exit;
+						GAME_LOG_FATAL("Unable to resize game texture: %s\n", SDL_GetError());	
+						return SDL_FAILURE;
 					}
 				 } break;
 				 case SDL_WINDOWEVENT_EXPOSED:
 				 {
 					if (SDL_UpdateTexture(game_texture, NULL, game_surface->pixels, game_surface->pitch) < 0) {
-						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to update game texture: %s\n", SDL_GetError());	
-						exit_code = TEXTURE_FAILURE_CODE;
-						goto __exit;
+						GAME_LOG_FATAL("Unable to update game texture: %s\n", SDL_GetError());	
+						return SDL_FAILURE;
 					}
 					if (SDL_RenderClear(game_renderer) < 0) {
-						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to clear game renderer: %s\n", SDL_GetError());	
-						exit_code = RENDERER_FAILURE_CODE;
-						goto __exit;
+						GAME_LOG_FATAL("Unable to clear game renderer: %s\n", SDL_GetError());	
+						return SDL_FAILURE;
 					}
 					if (SDL_RenderCopy(game_renderer, game_texture, NULL, NULL) < 0) {
-						SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to copy to game renderer: %s\n", SDL_GetError());	
-						exit_code = RENDERER_FAILURE_CODE;
-						goto __exit;
+						GAME_LOG_FATAL("Unable to copy to game renderer: %s\n", SDL_GetError());	
+						return SDL_FAILURE;
 					} 
 					SDL_RenderPresent(game_renderer);
 				 } break;
@@ -197,10 +139,9 @@ GAME_STATUS game_handle_events(Game* game)
 					game_is_running = false;
 				}
 			 } break;
-			} // end-event-switch	
-		} // end-event-while 
-	} // end-game-while	
-
+			} 
+		} 
+	} 
 	
 }
 
@@ -209,11 +150,9 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 	GAME_ASSERT(game != NULL, "Game is null");	
 	GAME_ASSERT(arg_table != NULL, "Argtable is null");	
 		
-	GAME_STATUS leave_status = GAME_DEFAULT_INITIALISER;
-
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		GAME_LOG_FATAL("Unable to initialise game SDL backend: %s\n", SDL_GetError());	
-		GAME_LEAVE(SDL_FAILURE);
+		return SDL_FAILURE;
 	}
 
 	const char* window_title = GAME_UNAME" ["GAME_COMPILER" - x86/64]("GAME_BUILD_MODE")";
@@ -222,27 +161,42 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 	
 	if (game->window == NULL) {
 		GAME_LOG_FATAL("Unable to create game window: %s\n", SDL_GetError());	
-		GAME_LEAVE(SDL_FAILURE);
+		return SDL_FAILURE;
 	}
 
-	game->renderer = SDL_CreateRenderer(game_window, -1, 0);
+	const int DEFAULT_RENDERING_DRIVER = -1;
+	game->renderer = SDL_CreateRenderer(game_window, DEFAULT_RENDERING_DRIVER, GAME_SDL_NO_FLAGS);
 
 	if (game->renderer == NULL) {
 		GAME_LOG_FATAL("Unable to create game renderer: %s\n", SDL_GetError());	
-		GAME_LEAVE(SDL_FAILURE);
+		return SDL_FAILURE;
 	}
 
-	game_surface = SDL_CreateRGBSurface(0, game_width, game_height, 32,
+	const int GAME_SURFACE_DEPTH = 32;
+	// As we are type casting to specific values, endianness is important
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	const int RED_PIXEL_MASK = 0x00FF0000; 
+	const int GREEN_PIXEL_MASK = 0x0000FF00;  
+	const int BLUE_PIXEL_MASK = 0x000000FF;  
+	const int ALPHA_PIXEL_MASK = 0xFF000000;  
+#else
+	const int RED_PIXEL_MASK = 0x00FF0000; 
+	const int GREEN_PIXEL_MASK = 0x0000FF00;  
+	const int BLUE_PIXEL_MASK = 0x000000FF;  
+	const int ALPHA_PIXEL_MASK = 0xFF000000;  
+#endif
+
+	game_surface = SDL_CreateRGBSurface(GAME_SDL_NO_FLAGS, arg_table->width->value, arg_table->height->value, GAME_SURFACE_DEPTH
 									0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 
 	if (game_surface == NULL) {
 		GAME_LOG_FATAL("Unable to create game surface: %s\n", SDL_GetError());	
-		GAME_LEAVE(SDL_FAILURE);
+		return SDL_FAILURE;
 	}
 
 	if (game__set_starting_surface(game_surface) == SURFACE_FAILURE_CODE) {
 		GAME_LOG_FATAL("Unable to set starting game surface: %s\n", SDL_GetError());	
-		GAME_LEAVE(SDL_FAILURE);
+		return SDL_FAILURE;
 	}
 
 	game_texture = SDL_CreateTexture(game_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
@@ -258,13 +212,15 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 	return GAME_SUCCESS;
 }
 
-void game_exit(Game* game)
+GAME_STATUS game_exit(Game* game, GAME_STATUS exit_status)
 {
 	if (game->surface != NULL) SDL_FreeSurface(game_surface);
 	if (game->texture != NULL) SDL_DestroyTexture(game_texture);
 	if (game->renderer != NULL) SDL_DestroyRenderer(game_renderer);
 	if (game->window != NULL) SDL_DestroyWindow(game_window);
 	if (SDL_WasInit(SDL_INIT_EVERYTHING)) SDL_Quit();
+	
+	return exit_status;
 }
 
 

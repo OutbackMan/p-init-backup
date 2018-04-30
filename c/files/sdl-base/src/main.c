@@ -1,13 +1,14 @@
 #include "common.h"
 #include "core/game.h"
-#include "utils/status-codes.h"
+#include "utils/status.h"
 #include "utils/log.h"
+#include "utils/args.h"
 
 #include <SDL2/SDL.h>
 
 int main(int argc, char* argv[argc + 1])
 {
-	GAME_STATUS leave_status = GAME_ENTERED;
+	GAME_STATUS leave_status = ENTERED;
 
 #if defined(DEBUG_BUILD)
 	game_log_init_logging((GAME_LOG_MODE)DEBUG_MODE, NULL);
