@@ -19,7 +19,7 @@ int main(int argc, char* argv[argc + 1])
 	const real32 GAME_DESIRED_FPS = 60.0f;
 	const real32 GAME_DESIRED_FRAME_TIME_MS = 1000.0f / DESIRED_FPS;
 	
-	GAME_ArgTable game_arg_table = game_arg_table_default_arg_table;
+	GAME_ArgTable game_arg_table = game_args_arg_table;
 	GAME_STATUS game_arg_table_parse_status = GAME_DEFAULT_INITIALISER;
 	if ((game_arg_table_parse_status = game_arg_table_parse(&game_arg_table)) != SUCCESS) {
 		GAME_LOG_WARN("Unable to parse user supplied command line options for game. Using default values...\nStatus: %s", game_status_str(game_arg_table_parse_status));
