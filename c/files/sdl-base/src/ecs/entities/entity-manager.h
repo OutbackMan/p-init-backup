@@ -9,25 +9,21 @@ typedef struct {
 	DisplacementComponent* displacement_component;
 } EntityManager;
 
-status_code_t entity_manager__create_component_mask(BitArray* component_mask, const size_t num_components)
+int main(void)
 {
-	for (size_t component_index = 0; component_index < starting_component_capacity; ++component_index) {
-		bit_array_create(&component_mask[component_index], starting_component_capacity);
-	}
-			
+	EntityManager entity_manager = {0};	
+	game__entity_manager_create(&entity_manager, 30);
 }
 
-status_code_t entity_manager_create(EntityManager* entity_manager, const size_t starting_component_capacity)
+GAME_STATUS game__entity_manager_create(EntityManager* entity_manager, const size_t starting_component_capacity)
 {
 	BitArray bit_array_temp = GAME_DEFAULT_INITIALISER;
+	if (bit_array_create(&bit_array_temp, starting_component_capacity) != SUCCESS) {
+		GAME_LEAVE(FAILURE);		
+	}
 
 	for (size_t component_index = 0; component_index < starting_component_capacity; ++component_index) {
-		if (bit_array_create(&bit_array_temp, starting_component_capacity) != SUCCESS) {
-			GAME_LEAVE(FAILURE);		
-		}
-
 		GAME_STRETCHY_BUF_PUSH(entity_manager->component_mask, bit_array_temp);
-
 		GAME_STRETCHY_BUF_PUSH(entity_manager->displacement_component, GAME_DEFAULT_INITIALISER); 
 	}
 

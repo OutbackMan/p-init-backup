@@ -1,6 +1,19 @@
+// typedef SDL_Colour colour_asset;
 
-// Assets
 SDL_Color tetromino[7][16] = {0};
+
+GAME_STATUS game_assets__load_tetromino(game_asset* tetromino)
+{
+	game_asset left_tetromino[16] = {
+		RED, 		
+	}
+	BUF_PUSH(tetromino, left_tetromino);
+}
+
+void game_assets__free(GAME_AssetManager* asset_manager)
+{
+		free(asset_manager);	
+}
 
 tetromino[0] = {
 	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,

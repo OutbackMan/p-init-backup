@@ -20,7 +20,9 @@ int main(int argc, char* argv[argc + 1])
 	const real32 GAME_DESIRED_FPS = 60.0f;
 	const real32 GAME_DESIRED_FRAME_TIME_MS = 1000.0f / DESIRED_FPS;
 	
-	GAME_ArgTable* game_arg_table = game_args_parse();
+	GAME_ArgTable game_arg_table = game_args_default_arg_table;
+
+	game_args_parse(&game_arg_table);
 	
 	if (game_arg_table.help.value == true) {
 		game_args_print_syntax();

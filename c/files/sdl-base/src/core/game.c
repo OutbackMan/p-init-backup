@@ -90,12 +90,11 @@ INTERNAL STATUS_CODE game__resize_texture(Game* game, int current_game_width, in
 
 // 1. ASSETS: items, map
 
-/*
-game {
-	window, renderer, is_running,
-	assets(map, tetromino, ...)
+GAME_STATUS game_update(Game* game, real32 delta_time)
+{
+			
 }
-*/
+
 
 GAME_STATUS game_handle_events(Game* game)
 {
@@ -103,18 +102,17 @@ GAME_STATUS game_handle_events(Game* game)
 		while (SDL_PollEvent(&event)) {
 			switch (event.type) {
 			case SDL_QUIT:
-				game.is_running = false;	 
+				game->is_running = false;	 
 			break;
 			case SDL_WINDOWEVENT:
 				switch (event.window.event) {
-				 case SDL_WINDOWEVENT_RESIZED:
+				case SDL_WINDOWEVENT_RESIZED:
 					if (game__resize_texture(game_texture, game_renderer, event.window.data1, event.window.data2) != SUCCESS_CODE) {
 						GAME_LOG_FATAL("Unable to resize game texture: %s\n", SDL_GetError());	
 						return SDL_FAILURE;
 					}
-				 } break;
-				 case SDL_WINDOWEVENT_EXPOSED:
-				 {
+					break;
+				case SDL_WINDOWEVENT_EXPOSED:
 					if (SDL_UpdateTexture(game_texture, NULL, game_surface->pixels, game_surface->pitch) < 0) {
 						GAME_LOG_FATAL("Unable to update game texture: %s\n", SDL_GetError());	
 						return SDL_FAILURE;
@@ -128,17 +126,15 @@ GAME_STATUS game_handle_events(Game* game)
 						return SDL_FAILURE;
 					} 
 					SDL_RenderPresent(game_renderer);
-				 } break;
-				}
-			 } break;
-
+					break;
+				break;
 			 case SDL_KEYDOWN:
-			 {
-				SDL_Keycode entered_keycode = event.key.keysym.sym;
-				if (entered_keycode == SDLK_ESCAPE) {
-					game_is_running = false;
+				// check for ctrl-q also, etc.
+				if (event.key.keysym.sym == SDLK_ESCAPE) {
+					game->is_running = false;
+				} else {
+					game__system_input(game, event);
 				}
-			 } break;
 			} 
 		} 
 	} 
@@ -207,6 +203,8 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 		return SDL_FAILURE;
 	}
 
+	// create game->entity_manager
+
 	game->is_running = true;
 
 	return GAME_SUCCESS;
@@ -214,10 +212,11 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 
 GAME_STATUS game_exit(Game* game, GAME_STATUS exit_status)
 {
-	if (game->surface != NULL) SDL_FreeSurface(game_surface);
-	if (game->texture != NULL) SDL_DestroyTexture(game_texture);
-	if (game->renderer != NULL) SDL_DestroyRenderer(game_renderer);
-	if (game->window != NULL) SDL_DestroyWindow(game_window);
+	if (game->entity_manager != NULL) game_entity_manager_destroy(game->entity_manager); 
+	if (game->surface != NULL) SDL_FreeSurface(game->surface);
+	if (game->texture != NULL) SDL_DestroyTexture(game->texture);
+	if (game->renderer != NULL) SDL_DestroyRenderer(game->renderer);
+	if (game->window != NULL) SDL_DestroyWindow(game->window);
 	if (SDL_WasInit(SDL_INIT_EVERYTHING)) SDL_Quit();
 	
 	return exit_status;
