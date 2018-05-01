@@ -1,32 +1,41 @@
-// typedef SDL_Colour colour_asset;
-#include "sdl-colour-wrappers.h"
-
-SDL_Color tetromino[7][16] = {0};
+#include "assets/colour/colour.h"
 
 enum {
-	TETROMINO_LEFT,
-	TETROMINO_RIGHT
+	TETROMINO_LEFT_PIECE,
+	TETROMINO_RIGHT_PIECE,
 };
+
+enum {
+	TETROMINO_TOP_LEFT,
+}
+
+#define LEFT_TETROMINO_COLOUR GAME_COLOUR_RED
 
 colour_asset* tetrominoes = NULL;
 if (colours_assets__load_tetrominoes(tetrominoes)) {
 	tetrominoes[TETROMINO_LEFT][TOP_LEFT];
 }
 
-GAME_STATUS game_assets__load_tetromino(colour_asset* tetromino)
+GAME_STATUS game_colour_assets__load_tetromino(SDL_Colour* tetromino)
 {
-	game_asset left_tetromino[16] = {
-		RED, 		
+	GAME_STATUS leave_status = ENTERED;
+
+	const size_t TETROMINO_DIMENSION = 16;
+
+	SDL_Colour left_tetromino[TETROMINO_DIMENSION] = {
+		GAME_COLOUR_ASSET__LEFT_TETROMINO_COLOUR, GAME__BACKGROUND_COLOUR 
 	}
-	// anything with BUF_PUSH requires __leave:
 	BUF_PUSH(tetromino, left_tetromino);
+
+
+	// anything with BUF_PUSH requires __leave:
+	__leave:
 	
 }
 
-void game_assets__free(colour_asset* asset_manager)
-{
-		BUF_FREE(asset_manager);	
-}
+GAME_STATUS game_colour_assets__draw_tetromino(SDL_Surface, size_t scale)
+
+// perhaps also a draw() function
 
 tetromino[0] = {
 	BG_COLOUR, BG_COLOUR, RED, BG_COLOUR,
