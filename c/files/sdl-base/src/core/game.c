@@ -72,6 +72,8 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 
 	// load assets here??
 
+	// 1D --> 2D: y * width + x
+
 	game->is_running = true;
 
 	return GAME_SUCCESS;

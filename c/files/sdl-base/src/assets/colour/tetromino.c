@@ -1,23 +1,27 @@
 #include "assets/colour/colour.h"
 
-enum {
-	TETROMINO_I_PIECE,
+#include "assets/identifiers.h"
+// typedef enum { EMPTY_SPACE, BORDER, TETROMINO } GAME_ASSET_IDENTIFIER;
+
+static struct {
+	size_t width;
+	size_t height;
+} __Tetromino = {
+	.width = 4,
+	.height = 4
 };
 
-#define 1_TETROMINO_COLOUR GAME_COLOUR_RED
-#define Z_TETROMINO_COLOUR GAME_COLOUR_GREEN
-
-GAME_STATUS game_colour_assets__load_tetromino(SDL_Colour* tetromino)
+GAME_STATUS game_assets_colour__tetromino_load(GAME_ASSET_IDENTIFIER* tetromino)
 {
 	GAME_STATUS leave_status = ENTERED;
 
 	const size_t TETROMINO_DIMENSION = 16;
 
-	SDL_Colour tetromino_1[TETROMINO_DIMENSION] = {
-		GAME_COLOUR_BG, GAME_COLOUR_BG, 1_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG,
-		GAME_COLOUR_BG, GAME_COLOUR_BG, 1_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG,
-		GAME_COLOUR_BG, GAME_COLOUR_BG, 1_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG,
-		GAME_COLOUR_BG, GAME_COLOUR_BG, 1_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG
+	GAME_ASSET_IDENTIFIER tetromino_1[TETROMINO_DIMENSION] = {
+		EMPTY_SPACE, GAME_COLOUR_BG, 1_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG,
+		EMPTY_SPACE, GAME_COLOUR_BG, 1_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG,
+		EMPTY_SPACE, GAME_COLOUR_BG, 1_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG,
+		EMPTY_SPACE, GAME_COLOUR_BG, 1_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG
 	}:
 	BUF_PUSH(tetromino, tetromino_1);
 
@@ -67,49 +71,51 @@ GAME_STATUS game_colour_assets__load_tetromino(SDL_Colour* tetromino)
 		GAME_COLOUR_BG, GAME_COLOUR_BG, LEFT_TETROMINO_COLOUR, GAME_GAME_COLOUR_BG
 	}:
 	BUF_PUSH(tetromino, tetromino_vertical);
+	// have 0 for empty space, 1 for piece
 		
 	// anything with BUF_PUSH requires __leave:
 	__leave:
 		return leave_status;
 	
 }
-#undef LEFT_TETROMINO_COLOUR
-
-GAME_STATUS game_colour_assets__draw_tetromino(SDL_Surface, size_t scale)
 
 // perhaps also a draw() function
+// GAME_STATUS game_colour_assets__draw_tetromino(SDL_Surface, size_t scale)
 
-
-
+// load_tetromino_assets()
+// set_starting_surface()
+// LOOP
+// draw_active_surface() i.e. field
 // 
-tetromino[3] = {
-	GAME_COLOUR_BG, BG_COLOUR, RED, BG_COLOUR,
-	GAME_COLOUR_BG, RED, RED, BG_COLOUR,
-	GAME_COLOUR_BG, RED, RED, BG_COLOUR,
-	GAME_COLOUR_BG, BG_COLOUR, BG_COLOUR, BG_COLOUR
-};
+// draw_surface_to_texture()
+// LOOP
 
-// t
-tetromino[4] = {
-	GAME_COLOUR_BG, BG_COLOUR, RED, BG_COLOUR,
-	GAME_COLOUR_BG, RED, RED, BG_COLOUR,
-	GAME_COLOUR_BG, BG_COLOUR, RED, BG_COLOUR,
-	GAME_COLOUR_BG, BG_COLOUR, BG_COLOUR, BG_COLOUR
-};
+int game_assets_colour__tetromino_rotation_index(int x, int y, int rotation_index)
+{
+	switch (rotation_index % __Tetromino.width) {
+	case 0:		
+		return y * 4 + x; 
+	case 1:		
+		return 12 + y - (x * 4);
+	case 2:		
+		return 15 - (y * 4) - x;
+	case 3:		
+		return 3 - y + (x * 4);
+	default:
+		return 0;
+	}
+}
 
-// L
-tetromino[5] = {
-	GAME_COLOUR_BG, BG_COLOUR, BG_COLOUR, BG_COLOUR,
-	GAME_COLOUR_BG, RED, RED, BG_COLOUR,
-	GAME_COLOUR_BG, BG_COLOUR, RED, BG_COLOUR,
-	GAME_COLOUR_BG, BG_COLOUR, RED, BG_COLOUR
-};
+bool game_assets_colour__tetromino_does_fit(int tetromino, int current_rotation, int top_left_x, int top_left_y)
+{
+	for (size_t px = 0; px < __Tetromino.width; ++px) {
+		for (size_t py = 0; py < __Tetromino.height; ++py) {
+			// piece index
+			int pi = game_asset_colour__tetromino_rotation_index(top_left_x, top_left_y, current_rotation);		
+			// field index
+		}		
+	}	
+	return true;	
+}
 
-// I
-tetromino[6] = {
-	GAME_COLOUR_BG, BG_COLOUR, BG_COLOUR, BG_COLOUR,
-	GAME_COLOUR_BG, RED, RED, BG_COLOUR,
-	GAME_COLOUR_BG, RED, BG_COLOUR, BG_COLOUR,
-	GAME_COLOUR_BG, RED, BG_COLOUR, BG_COLOUR
-};
 
