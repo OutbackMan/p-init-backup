@@ -8,36 +8,6 @@ typedef struct {
 
 #include "common.h"
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stddef.h>
-
-#define PI32 3.14159265359f
-
-GAME_STATUS game_update(Game* game, real32 delta_time)
-{
-			
-}
-
-
-GAME_STATUS game_handle_events(Game* game)
-{
-		GAME_STATUS game_events_handle_status = GAME_DEFAULT_INITIALISER;
-
-		SDL_Event event = {0};
-		while (SDL_PollEvent(&event)) {
-			if ((game_events_handle_status = game_events__handle(game, event.type)) != SUCCESS) {
-				GAME_LOG_FATAL("Unable to handle game events. Status %s\n", game_status_str(game_events_handle_status));	
-				return FAILURE;
-			}
-		}
-
-	return SUCCESS;
-}
-
 GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 {
 	GAME_ASSERT(game != NULL, "Game is null");	
@@ -105,6 +75,26 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 	game->is_running = true;
 
 	return GAME_SUCCESS;
+}
+
+GAME_STATUS game_handle_events(Game* game)
+{
+		GAME_STATUS game_events_handle_status = GAME_DEFAULT_INITIALISER;
+
+		SDL_Event event = {0};
+		while (SDL_PollEvent(&event)) {
+			if ((game_events_handle_status = game_events__handle(game, event.type)) != SUCCESS) {
+				GAME_LOG_FATAL("Unable to handle game events. Status %s\n", game_status_str(game_events_handle_status));	
+				return FAILURE;
+			}
+		}
+
+	return SUCCESS;
+}
+
+GAME_STATUS game_update(Game* game, real32 delta_time)
+{
+			
 }
 
 void game_exit(Game* game)

@@ -50,6 +50,8 @@ License:
 	} while (0);
 
 #define GAME_SDL_NO_FLAGS 0
+#define PI32 3.14159265359f
+#define GAME_NO_DEFAULT_CASE
 // don't append ';' as these should be used like functions
 #if GAME_BUILD_MODE_DEBUG
 #define GAME_BREAKPOINT() raise(SIGABRT)
