@@ -28,39 +28,10 @@ GAME_INTERNAL GAME_STATUS handle_keyboard_events(Game* game, SDL_KeyboardEvent* 
 	
 }
 
-// as not all window managers respect size changes when resizing, must check to resize window after event handling is done
-// when field is chosen, must decide on aspect ratio to maintain
-GAME_INTERNAL GAME_STATUS handle_window_resize()
-{
-	static const unsigned scale_factor = 12;
-	static int32 previous_window_width = field_width;
-	static int32 previous_window_height = field_height;
-
-	bool width_was_shrunk = (previous_window_width < current_window_width);
-	bool height_was_shrunk = (previous_window_height < current_window_height);
-
-	if (previous_window_width % 2 != 0) {
-		
-	}
-		
-		
-		&& width_was_shrunk) {
-		int32 new_window_width = --previous_window_width - scale_factor;
-	} else {
-		++previous_window_width;		
-	}
-
-	int32 new_window_width = (width_was_shrunk ? previous_window_width - scale_factor : )
-
-}
-
 GAME_INTERNAL GAME_STATUS handle_window_events(Game* game, SDL_WindowEvent* window_event)
 {
 	switch (window_event->event) {
 	case SDL_WINDOWEVENT_RESIZED:
-		if (window_event.data1 - window_scale < field_width || window_event.data2 > field_height) {
-			windo;
-		}
 		if (game_texture_resize(game->texture, game->renderer, window_event.data1, window_event.data2) != SUCCESS) {
 			GAME_LOG_FATAL("Unable to resize game texture: %s\n", SDL_GetError());	
 			return SDL_FAILURE;
@@ -81,4 +52,27 @@ GAME_INTERNAL GAME_STATUS handle_window_events(Game* game, SDL_WindowEvent* wind
 		} 
 		SDL_RenderPresent(game_renderer);
 		break;
+}
+
+GAME_INTERNAL GAME_STATUS handle_window_resize()
+{
+	static int32 previous_window_width = field_width;
+	static int32 previous_window_height = field_height;
+
+	bool width_was_shrunk = (previous_window_width < current_window_width);
+	bool height_was_shrunk = (previous_window_height < current_window_height);
+
+	if (previous_window_width % 2 != 0) {
+		
+	}
+		
+		
+		&& width_was_shrunk) {
+		int32 new_window_width = --previous_window_width - scale_factor;
+	} else {
+		++previous_window_width;		
+	}
+
+	int32 new_window_width = (width_was_shrunk ? previous_window_width - scale_factor : )
+
 }
