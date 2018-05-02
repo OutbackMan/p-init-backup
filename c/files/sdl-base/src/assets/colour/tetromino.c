@@ -82,12 +82,15 @@ GAME_STATUS game_assets_colour__tetromino_load(GAME_ASSET_IDENTIFIER* tetromino)
 // perhaps also a draw() function
 // GAME_STATUS game_colour_assets__draw_tetromino(SDL_Surface, size_t scale)
 
-// load_tetromino_assets()
-// set_starting_surface()
+// load_tetromino_assets() could just do ".inc"
+// init_playing_field() perhaps just an int array? (assume texture initialised)
+// -> playing_field[y * field_width + x] = (row == 0 || row == width - 1 || col == 0 || col = height - 1) ? BOUNDARY : EMPTY;
 // LOOP
-// draw_active_surface() i.e. field
+// update_playing_field()
+// -> playing_field[(y + 2) * width + (x + 2)]
 // 
-// draw_surface_to_texture()
+// draw_playing_field()
+// -> convert_field_to_texture(): num-to-colour, draw_texture() may have to have static window size
 // LOOP
 
 int game_assets_colour__tetromino_rotation_index(int x, int y, int rotation_index)
@@ -113,6 +116,7 @@ bool game_assets_colour__tetromino_does_fit(int tetromino, int current_rotation,
 			// piece index
 			int pi = game_asset_colour__tetromino_rotation_index(top_left_x, top_left_y, current_rotation);		
 			// field index
+			int fi = (top_left_y + py) * 	
 		}		
 	}	
 	return true;	
