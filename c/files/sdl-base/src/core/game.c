@@ -35,32 +35,9 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 		return SDL_FAILURE;
 	}
 
-	const int GAME_SURFACE_DEPTH = 32;
-	// As we are type casting to specific values, endianness is important
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	const int RED_PIXEL_MASK = 0x00FF0000; 
-	const int GREEN_PIXEL_MASK = 0x0000FF00;  
-	const int BLUE_PIXEL_MASK = 0x000000FF;  
-	const int ALPHA_PIXEL_MASK = 0xFF000000;  
-#else
-	const int RED_PIXEL_MASK = 0x00FF0000; 
-	const int GREEN_PIXEL_MASK = 0x0000FF00;  
-	const int BLUE_PIXEL_MASK = 0x000000FF;  
-	const int ALPHA_PIXEL_MASK = 0xFF000000;  
-#endif
-
-	game_surface = SDL_CreateRGBSurface(GAME_SDL_NO_FLAGS, arg_table->width->value, arg_table->height->value, GAME_SURFACE_DEPTH
-									RED_PIXEL_MASK, GREEN_PIXEL_MASK, BLUE_PIXEL_MASK, ALPHA_PIXEL_MASK);
-
-	if (game_surface == NULL) {
-		GAME_LOG_FATAL("Unable to create game surface: %s\n", SDL_GetError());	
-		return SDL_FAILURE;
-	}
-
-	if (game__set_starting_surface(game_surface) == SURFACE_FAILURE_CODE) {
-		GAME_LOG_FATAL("Unable to set starting game surface: %s\n", SDL_GetError());	
-		return SDL_FAILURE;
-	}
+	GameWorld game_world = GAME_DEFAULT_INITIALISER;
+	// creates and loads starting map
+	game__world_init(&game_world);
 
 	game_texture = SDL_CreateTexture(game_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
 											game_width, game_height);
@@ -71,8 +48,6 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 	}
 
 	// load assets here??
-
-	// 1D --> 2D: y * width + x
 
 	game->is_running = true;
 
