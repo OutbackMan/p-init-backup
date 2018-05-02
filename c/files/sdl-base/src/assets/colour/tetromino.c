@@ -82,15 +82,29 @@ GAME_STATUS game_assets_colour__tetromino_load(GAME_ASSET_IDENTIFIER* tetromino)
 // perhaps also a draw() function
 // GAME_STATUS game_colour_assets__draw_tetromino(SDL_Surface, size_t scale)
 
+/* SDL_Colour colour_map[FIELD_BLOCK_TYPES__LEN] = {
+	COLOUR_BLACK, // BOUNDARY
+	...
+}
+*/
+
 // load_tetromino_assets() could just do ".inc"
 // init_playing_field() perhaps just an int array? (assume texture initialised)
 // -> playing_field[y * field_width + x] = (row == 0 || row == width - 1 || col == 0 || col = height - 1) ? BOUNDARY : EMPTY;
+
+// current_piece, current_rotation, current_x = field_width / 2, current_y
 // LOOP
 // update_playing_field()
-// -> playing_field[(y + 2) * width + (x + 2)]
-// 
+// -> if (tetromino[current_piece][rotate(px, py, current_rotation)] == PIECE)
+//		field[current_y + py * width + current_x + px] == PIECE
+// handle_input()
+// -> if (key_left)
+//		if (does_piece_fit(piece_id, current_rotation, current_x - 1, current_y))
+//			current_x = current_x - 1;
 // draw_playing_field()
-// -> convert_field_to_texture(): num-to-colour, draw_texture() may have to have static window size
+// -> convert_field_to_texture(): num-to-colour, 
+// --> texture[y * width + x] = colour_map[field[y * width + x]];
+// draw_texture() may have to have static window size
 // LOOP
 
 int game_assets_colour__tetromino_rotation_index(int x, int y, int rotation_index)
@@ -109,14 +123,22 @@ int game_assets_colour__tetromino_rotation_index(int x, int y, int rotation_inde
 	}
 }
 
-bool game_assets_colour__tetromino_does_fit(int tetromino, int current_rotation, int top_left_x, int top_left_y)
+bool game_assets_colour__tetromino_does_fit(int tetromino_id, int current_rotation, int top_left_x, int top_left_y)
 {
 	for (size_t px = 0; px < __Tetromino.width; ++px) {
 		for (size_t py = 0; py < __Tetromino.height; ++py) {
 			// piece index
 			int pi = game_asset_colour__tetromino_rotation_index(top_left_x, top_left_y, current_rotation);		
 			// field index
-			int fi = (top_left_y + py) * 	
+			int fi = (top_left_y + py) * field_width + (top_left_x + px);
+
+			if (top_left_x + px >= 0 && top_left_x + px < field_width) {
+				if (top_left_y + py >= 0 && top_left_y + py < field_height) {
+					if (tetromino[tetromino_id][pi] == TETROMINO_PIECE && playing_field[fi] != EMPTY) {
+						return false;		
+					}
+				}
+			}
 		}		
 	}	
 	return true;	
