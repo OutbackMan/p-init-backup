@@ -44,6 +44,7 @@ int main(int argc, char* argv[argc + 1])
 	u32 previous_frame_tick_count = SDL_GetTicks();
 	u32 current_frame_tick_count = GAME_DEFAULT_INITIALISER;
 	
+	// encapsulate inside of game_start() --> game_init(), game_loop()
 	while (game.is_running) {
 		current_frame_tick_count = SDL_GetTicks() - previous_frame_tick_count;
 		previous_frame_tick_count = current_frame_tick_count;
