@@ -12,12 +12,7 @@ typedef struct {
 	size_t width; // in relation to cell size, i.e. 2 means two cells
 	size_t height;
 	SDL_Colour* colour_data; // width * height
-} GameMultiCell;
-
-typedef struct {
-	GAME_FIELD_CELL_IDENTIFIER identifier;
-	SDL_Colour* colour_data; // single colour
-} GameSingleCell;
+} GameSprite;
 
 typedef struct {
 	size_t width;
@@ -28,9 +23,7 @@ typedef struct {
 
 // GameField game_field = {0};
 // field_init(&game_field, 10, 10);
-// field_set_pos_multi_cell(&game_field, multi_cell, x, y);
-// field_set_pos_single_cell(&game_field, single_cell, x, y);
-// field_set_pos_identifier(&game_field, EMPTY, x, y); 
+// field_set_pos_sprite(&game_field, multi_cell, x, y);
 // field_get_pos_identifier(&game_field, x, y);
 // draw_field(&game_field); 
 
@@ -55,7 +48,7 @@ GAME_FIELD_IDENTIFIER field_pos_get_identifer(GameField* field, size_t x, size_t
 	return field->identifiers[y * field->width + x];
 }
 
-void field_pos_set_multi_cell(GameField* field, GameMultiCell* multi_cell, size_t x, size_t y)
+void field_pos_set_sprite(GameField* field, GameMultiCell* multi_cell, size_t x, size_t y)
 {
 	for (size_t cell_row = 0; cell_row < multi_cell->width; ++cell_row) {
 		for (size_t cell_col = 0; cell_col < multi_cell->height; ++cell_col) {
@@ -64,9 +57,8 @@ void field_pos_set_multi_cell(GameField* field, GameMultiCell* multi_cell, size_
 	} 		
 }
 
-void draw_field_same_scale(GameField* field)
+void draw_field(GameField* field)
 {
-	// same scale assumes screen size is 8 times field width and height
 	int texture_width = GAME_DEFAULT_INITIALISER;
 	int texture_height = GAME_DEFAULT_INITIALISER;
 
@@ -75,9 +67,9 @@ void draw_field_same_scale(GameField* field)
 		return SDL_FAILURE;
 	}
 
-	// ensure that window resize is to an integer multiple of field_width
-	int width_scale_factor = texture_width / field_width;
-	int height_scale_factor = texture_height / field_height;
+	// ensure that window resize is a 'cell size' multiple of field_width and height
+	int width_scale = texture_width / field->width;
+	int height_scale = texture_height / field->height;
 
 	void* texture_pixels = NULL;
 	int texture_pitch = GAME_DEFAULT_INITIALISER;
@@ -87,50 +79,42 @@ void draw_field_same_scale(GameField* field)
 	}
 	
 	u32* texture_pixel = NULL;
-	SDL_Colour* texture_pixel_colour = NULL;
+	SDL_Colour texture_pixel_colour = GAME_DEFAULT_INITIALISER;
 	size_t field_coord = GAME_DEFAULT_INITIALISER;
 
-	for (size_t field_row = 0; field_row < field->width; ++field_row) {
-		for (size_t field_col = 0; field_col < field->height; ++field_col) {
-			to_texture(character, x, y);
-		}
-	}
-
-	to_texture()
-	{
-		for (size_t character_row = 0; character_row < 8; ++character_row) {
-			for (size_t character_col = 0; character_col < 8; ++character_col) {
-				size_t texture_coord = (field_col + character_col) * texture_width + field_row + character_row;
-				texture_pixel[y + character_col + width * x + character_row] = colour[character_col * width + character_row]
-			}	
-		}
-	}
-
-	for (size_t texture_row = 0; texture_row < texture_width; ++texture_row) {
-		texture_pixel = (u32 *)((u8 *)texture_pixels + texture_row * texture_pitch);
-		for (size_t texture_col = 0; texture_col < texture_height; ++texture_col) {
-			field_coord = texture_col * field_width + texture_row;
+	size_t starting_texture_row = 0;
+	size_t starting_texture_col = 0;
+	
+	for (size_t field_row = 0; field_row < field_width * width_scale; ++field_row) {
+		starting_texture_row = field_row;
+		for (size_t field_col = 0; field_col < field_height * height_scale; ++field_height) {
+		
+			starting_texture_col = field_col;
 			
-			for (size_t character_index = 0; character_index < 8 * 8; ++character_index) {
-				if (field->characters[field_coord].glyph->matrix[character_index] == SOLID) {
-					texture_pixel_colour = field->characters[field_coord].palette->solid;
-				} else {
-					texture_pixel_colour = field->characters[field_coord].palette->empty;
-				}
-
-				texture_pixel[texture_col * width + texture_row] =
-				*texture_pixel++ = (
+			texture_pixel = (u32 *)((u8 *)texture_pixels + texture_row * texture_pitch);
+		
+			field_coord = (field_col % height_scale) * field_width + (field_row % width_scale);
+		
+			if (field[field_coord].identifier == GHOST) {
+				for (size_t colour_row = 0; colour_row < ghost_multi->width * cell_size; colour_row++) {
+					for (size_t colour_col = 0; colour_col < ghost_multi->height * cell_size; ccolour_col++) {
+						size_t colour_coord = (colour_col % cell_size) * ghost_width + (colour_row % cell_size);
+							
+						texture_pixel_colour = ghost_multi->colour_data[colour_coord];
+					
+						texture_coord = (starting_texture_col + colour_col) * texture_width + (starting_texture_row + colour_row);
+					
+						texture_pixel[texture_coord] = (
 									(texture_pixel_colour->a << 24) |
 									(texture_pixel_colour->r << 16) |
 									(texture_pixel_colour->g << 8) | 
 									(texture_pixel_colour->b)
 								   ); 
+				}
 			}
 		}
 	}
-
 	SDL_UnlockTexture(game->texture);
-
 }
 
 public int[] resizePixels(int[] pixels,int w1,int h1,int w2,int h2) {
@@ -156,53 +140,6 @@ void draw_field(GameField* field)
 	int texture_width = GAME_DEFAULT_INITIALISER;
 	int texture_height = GAME_DEFAULT_INITIALISER;
 
-	if (SDL_QueryTexture(game->texture, NULL, NULL, &texture_width, &texture_height) < 0) {
-		GAME_LOG_FATAL("Unable to query game texture: %s\n", SDL_GetError());
-		return SDL_FAILURE;
-	}
-
-	// ensure that window resize is to an integer multiple of field_width
-	int width_scale_factor = texture_width / field_width;
-	int height_scale_factor = texture_height / field_height;
-
-	void* texture_pixels = NULL;
-	int texture_pitch = GAME_DEFAULT_INITIALISER;
-	if (SDL_LockTexture(game->texture, NULL, &texture_pixels, &texture_pitch) < 0) {
-		GAME_LOG_FATAL("Unable to query game texture: %s\n", SDL_GetError());
-		return SDL_FAILURE;
-	}
-	
-	u32* texture_pixel = NULL;
-	SDL_Colour* texture_pixel_colour = NULL;
-	size_t field_coord = GAME_DEFAULT_INITIALISER;
-
-	for (size_t texture_row = 0; texture_row < texture_width; ++texture_row) {
-		texture_pixel = (u32 *)((u8 *)texture_pixels + texture_row * texture_pitch);
-		for (size_t texture_col = 0; texture_col < texture_height; ++texture_col) {
-			field_coord = ((texture_col % height_scale) * field_width) + (texture_row % width_scale);
-			
-			for (size_t character_index = 0; character_index < 8 * 8; ++character_index) {
-				if (field->characters[field_coord].glyph->matrix[character_index] == SOLID) {
-					texture_pixel_colour = field->characters[field_coord].palette->solid;
-				} else {
-					texture_pixel_colour = field->characters[field_coord].palette->empty;
-				}
-
-				for (size_t width_scale_count = 0; width_scale_count < width_scale; ++width_scale_count) {
-					*texture_pixel++ = (
-										(texture_pixel_colour->a << 24) |
-										(texture_pixel_colour->r << 16) |
-										(texture_pixel_colour->g << 8) | 
-										(texture_pixel_colour->b)
-									   ); 
-				}
-			}
-		}
-	}
-
-	SDL_UnlockTexture(game->texture);
-
-}
 
 void free_field(GameField* field)
 {
