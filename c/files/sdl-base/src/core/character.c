@@ -1,55 +1,67 @@
-static const size_t GAME_CHARACTER_GLYPH_DIMENSION = 8 * 8;
+static const size_t GAME_FIELD_CELL_SIZE = 8; // i.e. font size
 
 typedef enum {
-	SOLID,
-	EMPTY	
-} GAME_GLYPH_FILL_TYPE;
+	EMPTY,
+	LEFT_TETROMINO,
+	RIGHT_TETROMINO
+} GAME_FIELD_CELL_IDENTIFIER;
 
 typedef struct {
-	GAME_GLYPH_FILL_TYPE matrix[GAME_CHARACTER_GLYPH_DIMENSION];
-} GameCharacterGlyph;
+	// Used by render to determine type of object
+	GAME_FIELD_CELL_IDENTIFIER identifier;
+	size_t width; // in relation to cell size, i.e. 2 means two cells
+	size_t height;
+	SDL_Colour* colour_data; // width * height
+} GameMultiCell;
 
 typedef struct {
-	SDL_Colour solid[1];
-	SDL_Colour empty[1];
-} GameCharacterPalette;
-
-typedef struct {
-	GameCharacterPalette palette[1];
-	GameCharacterGlyph glyph[1];
-} GameCharacter;
+	GAME_FIELD_CELL_IDENTIFIER identifier;
+	SDL_Colour* colour_data; // single colour
+} GameSingleCell;
 
 typedef struct {
 	size_t width;
 	size_t height;
-	GameCharacter* characters;
+	size_t cell_size;
+	GAME_FIELD_IDENTIFIER* identifiers;
 } GameField;
 
 // GameField game_field = {0};
 // field_init(&game_field, 10, 10);
-// field_set_pos(&game_field, CHARACTER_A, x, y); 
-// field_set_pos(&game_field, sprite_person, x, y); 
-// field_get_pos(&game_field, x, y);
+// field_set_pos_multi_cell(&game_field, multi_cell, x, y);
+// field_set_pos_single_cell(&game_field, single_cell, x, y);
+// field_set_pos_identifier(&game_field, EMPTY, x, y); 
+// field_get_pos_identifier(&game_field, x, y);
 // draw_field(&game_field); 
 
 // set starting area
-void field_init(GameField* field, size_t field_width, size_t field_height)
+void field_init(GameField* field, size_t field_width, size_t field_height, size_t cell_size)
 {
-	GAME_XMALLOC(field->characters, sizeof(GameCharacter) * field_width * field_height);
+	GAME_XMALLOC(field->identifiers, sizeof(GAME_FIELD_IDENTIFIER) * field_width * field_height);
+
+	field->width = field_width;
+	field->height = field_height;
+	field->cell_size = cell_size;
 
 	for (size_t field_row = 0; field_row < field_width; ++field_row) {
 		for (size_t field_col = 0; field_col < field_height; ++field_col) {
-			field->characters->palette->solid[0] = WHITE;
-			field->characters->palette->empty[0] = BLACK;
-
-			character_block_create(field->characters->glyph->matrix, COLOUR);
+			field->identifiers[field_col * field_width + field_row] = empty_single_cell->identifier;
 		}
 	}	
 }
 
-void field_set_pos(GameField* field, CHARACTER_TYPE type, size_t x, size_t y, solid, empty)
+GAME_FIELD_IDENTIFIER field_pos_get_identifer(GameField* field, size_t x, size_t y)
 {
-	character_create_func_list[type](field->characters[y * width + x].glyph->matrix, solid, empty);
+	return field->identifiers[y * field->width + x];
+}
+
+void field_pos_set_multi_cell(GameField* field, GameMultiCell* multi_cell, size_t x, size_t y)
+{
+	for (size_t cell_row = 0; cell_row < multi_cell->width; ++cell_row) {
+		for (size_t cell_col = 0; cell_col < multi_cell->height; ++cell_col) {
+			field->identifiers[(y + cell_col) * field->width + (x + cell_row)] = multi_cell->identifier;
+		} 
+	} 		
 }
 
 void draw_field_same_scale(GameField* field)
