@@ -86,11 +86,7 @@ void draw_field(GameField* field)
 	size_t starting_texture_col = 0;
 	
 	for (size_t field_row = 0; field_row < field_width * width_scale; ++field_row) {
-		starting_texture_row = field_row;
 		for (size_t field_col = 0; field_col < field_height * height_scale; ++field_height) {
-		
-			starting_texture_col = field_col;
-			
 			texture_pixel = (u32 *)((u8 *)texture_pixels + texture_row * texture_pitch);
 		
 			field_coord = (field_col % height_scale) * field_width + (field_row % width_scale);
@@ -111,6 +107,7 @@ void draw_field(GameField* field)
 									(texture_pixel_colour->b)
 								   ); 
 				}
+				starting_texture_row = 
 			}
 		}
 	}
