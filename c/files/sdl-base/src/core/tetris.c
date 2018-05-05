@@ -6,25 +6,31 @@ static const size_t VID_WIDTH = 40;
 static const uint32_t Occ = 0x10000;
 
 typedef struct {
-  int field[FIELD_WIDTH][FIELD_HEIGHT];
+  FILL_TYPE field[FIELD_WIDTH][FIELD_HEIGHT];
 } TetrisField;
 
 typedef struct {
+  int id;
+  SPRITE_IDENTIFIER identifier;
   int width;
   int height;
-  unsigned short shape[4];
+  FILL_TYPE* shape;
   SDL_Colour colour;
-  unsigned rotation;
-} TetrisPiece;
+} Sprite;
 
 void draw_piece()
 {
   draw_block(x, y, colour);
 }
 
-bool tetris_field_is_occupied(TetrisField* field, int x, int y)
+bool tetris_field_is_sprite_boundary(TetrisField* field, Sprite* sprite, int x, int y)
 {
-  return (x < 1 || x > FIELD_WIDTH - 2 || (y >= 0 && field->field[y][x] & Occ));
+  return field->field[x][y] == sprite->identifier;
+}
+
+bool tetris_field_is_sprite_body(TetrisField* field, SPRITE_IDENTIFIER identifier, int x, int y)
+{
+  return field[x][y] == sprite->identifier && sprite->shape[x][y] == SOLID;
 }
 
 void tetris_field_draw_row(TetrisField* field, int y)
@@ -62,9 +68,11 @@ void render_piece()
   for (int piece_x = 0; piece_x < piece_width; ++piece_x) {
     for (int scale_x_count = 0; scale_x_count < width_scale; ++scale_x_count) {
       for (int scale_y_count = 0; scale_y_count < height_scale; ++scale_y_count) {
+        if (piece->shape[piece_x][piece_y]
         tex[field_y + ren_y * ren_width + field_x + ren_x] = piece->colour[piece_x][piece_y];
         *ren_y++;
       }
       *ren_x++;
   }
+  *field_x += piece_width;
 }
