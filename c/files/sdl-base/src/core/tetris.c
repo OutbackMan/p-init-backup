@@ -10,8 +10,17 @@ typedef struct {
 } TetrisField;
 
 typedef struct {
-  
+  int width;
+  int height;
+  unsigned short shape[4];
+  SDL_Colour colour;
+  unsigned rotation;
 } TetrisPiece;
+
+void draw_piece()
+{
+  draw_block(x, y, colour);
+}
 
 bool tetris_field_is_occupied(TetrisField* field, int x, int y)
 {
@@ -35,10 +44,27 @@ int main(void)
     draw_row(tetris_field, y);
   }
   
+  // function for checking if solid pixel for each sprite
+  
+  for (bool is_running = true; !is_running; ) {
+    for (int ren_x = 0, field_x = 0; field_x < field_w; ++field_x) {
+      for (int ren_y = 0, field_y; field_y < field_h; ++field_y) {
+        if (field[x][y] == PIECE) render_piece(field_x, &ren_x, field_y, &ren_y);
+      }
+    }
+  }
+  
   puts("game over");
 }
 
-void tetris_field_draw_block(TetrisField* field, int x, int y, int colour)
+void render_piece()
 {
-
+  for (int piece_x = 0; piece_x < piece_width; ++piece_x) {
+    for (int scale_x_count = 0; scale_x_count < width_scale; ++scale_x_count) {
+      for (int scale_y_count = 0; scale_y_count < height_scale; ++scale_y_count) {
+        tex[field_y + ren_y * ren_width + field_x + ren_x] = piece->colour[piece_x][piece_y];
+        *ren_y++;
+      }
+      *ren_x++;
+  }
 }
