@@ -18,6 +18,11 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 		return SDL_FAILURE;
 	}
 
+	if (TTF_Init() == -1) {
+		GAME_LOG_FATAL("Unable to initialise SDL_ttf backend: %s\n", TTF_GetError());	
+		return SDL_FAILURE;
+	}
+
 	const char* window_title = GAME_UNAME" ["GAME_COMPILER" - x86/64]("GAME_BUILD_MODE")";
 	game->window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 									arg_table->width->value, arg_table->height->value, SDL_WINDOW_RESIZABLE);
