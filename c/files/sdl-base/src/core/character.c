@@ -1,124 +1,106 @@
-static const size_t GAME_CHARACTER_GLYPH_DIMENSION = 8 * 8;
+static const size_t GAME_FIELD_CELL_SIZE = 8; // i.e. font size
 
 typedef enum {
-	SOLID,
-	EMPTY	
-} GAME_GLYPH_FILL_TYPE;
+	EMPTY,
+	LEFT_TETROMINO,
+	RIGHT_TETROMINO
+} GAME_FIELD_CELL_IDENTIFIER;
 
 typedef struct {
-	GAME_GLYPH_FILL_TYPE matrix[GAME_CHARACTER_GLYPH_DIMENSION];
-} GameCharacterGlyph;
-
-typedef struct {
-	SDL_Colour solid[1];
-	SDL_Colour empty[1];
-} GameCharacterPalette;
-
-typedef struct {
-	GameCharacterPalette palette[1];
-	GameCharacterGlyph glyph[1];
-} GameCharacter;
+	// Used to perform calculations
+	GAME_FIELD_CELL_IDENTIFIER identifier;
+	size_t width; // in relation to cell size, i.e. 2 means two cells
+	size_t height;
+	SDL_Texture* texture; // width * height
+} GameSprite;
 
 typedef struct {
 	size_t width;
 	size_t height;
-	GameCharacter* characters;
+	size_t cell_size;
+	GAME_FIELD_IDENTIFIER* identifiers;
 } GameField;
 
 // GameField game_field = {0};
 // field_init(&game_field, 10, 10);
-// field_set_pos(&game_field, CHARACTER_A, x, y); 
-// field_set_pos(&game_field, sprite_person, x, y); 
-// field_get_pos(&game_field, x, y);
+// field_set_pos_sprite(&game_field, sprite, x, y);
+// field_get_pos_identifier(&game_field, x, y);
 // draw_field(&game_field); 
 
 // set starting area
-void field_init(GameField* field, size_t field_width, size_t field_height)
+void field_init(GameField* field, size_t field_width, size_t field_height, size_t cell_size)
 {
-	GAME_XMALLOC(field->characters, sizeof(GameCharacter) * field_width * field_height);
+	GAME_XMALLOC(field->identifiers, sizeof(GAME_FIELD_IDENTIFIER) * field_width * field_height);
+
+	field->width = field_width;
+	field->height = field_height;
+	field->cell_size = cell_size;
 
 	for (size_t field_row = 0; field_row < field_width; ++field_row) {
 		for (size_t field_col = 0; field_col < field_height; ++field_col) {
-			field->characters->palette->solid[0] = WHITE;
-			field->characters->palette->empty[0] = BLACK;
-
-			character_block_create(field->characters->glyph->matrix, COLOUR);
+			field->identifiers[field_col * field_width + field_row] = empty_single_cell->identifier;
 		}
 	}	
 }
 
-void field_set_pos(GameField* field, CHARACTER_TYPE type, size_t x, size_t y, solid, empty)
+GAME_FIELD_IDENTIFIER field_pos_get_identifer(GameField* field, size_t x, size_t y)
 {
-	character_create_func_list[type](field->characters[y * width + x].glyph->matrix, solid, empty);
+	return field->identifiers[y * field->width + x];
 }
 
-void draw_field_same_scale(GameField* field)
+void field_pos_set_sprite(GameField* field, GameMultiCell* multi_cell, size_t x, size_t y)
 {
-	// same scale assumes screen size is 8 times field width and height
+	for (size_t cell_row = 0; cell_row < multi_cell->width; ++cell_row) {
+		for (size_t cell_col = 0; cell_col < multi_cell->height; ++cell_col) {
+			field->identifiers[(y + cell_col) * field->width + (x + cell_row)] = multi_cell->identifier;
+		} 
+	} 		
+}
+
+void draw_field(GameField* field)
+{
 	int texture_width = GAME_DEFAULT_INITIALISER;
 	int texture_height = GAME_DEFAULT_INITIALISER;
 
+	SDL_RenderCopy(Main_Renderer, Background_Tx, NULL, NULL);
+	
 	if (SDL_QueryTexture(game->texture, NULL, NULL, &texture_width, &texture_height) < 0) {
 		GAME_LOG_FATAL("Unable to query game texture: %s\n", SDL_GetError());
 		return SDL_FAILURE;
 	}
 
-	// ensure that window resize is to an integer multiple of field_width
-	int width_scale_factor = texture_width / field_width;
-	int height_scale_factor = texture_height / field_height;
+	// ensure that window resize is a 'cell size' multiple of field_width and height
+	int width_scale = texture_width / field->width;
+	int height_scale = texture_height / field->height;
 
-	void* texture_pixels = NULL;
-	int texture_pitch = GAME_DEFAULT_INITIALISER;
-	if (SDL_LockTexture(game->texture, NULL, &texture_pixels, &texture_pitch) < 0) {
-		GAME_LOG_FATAL("Unable to query game texture: %s\n", SDL_GetError());
-		return SDL_FAILURE;
-	}
+	SDL_Rect src_rect;
+	SDL_Rect dst_rect;
 	
-	u32* texture_pixel = NULL;
-	SDL_Colour* texture_pixel_colour = NULL;
-	size_t field_coord = GAME_DEFAULT_INITIALISER;
-
-	for (size_t field_row = 0; field_row < field->width; ++field_row) {
-		for (size_t field_col = 0; field_col < field->height; ++field_col) {
-			to_texture(character, x, y);
-		}
-	}
-
-	to_texture()
-	{
-		for (size_t character_row = 0; character_row < 8; ++character_row) {
-			for (size_t character_col = 0; character_col < 8; ++character_col) {
-				size_t texture_coord = (field_col + character_col) * texture_width + field_row + character_row;
-				texture_pixel[y + character_col + width * x + character_row] = colour[character_col * width + character_row]
-			}	
-		}
-	}
-
-	for (size_t texture_row = 0; texture_row < texture_width; ++texture_row) {
-		texture_pixel = (u32 *)((u8 *)texture_pixels + texture_row * texture_pitch);
-		for (size_t texture_col = 0; texture_col < texture_height; ++texture_col) {
-			field_coord = texture_col * field_width + texture_row;
-			
-			for (size_t character_index = 0; character_index < 8 * 8; ++character_index) {
-				if (field->characters[field_coord].glyph->matrix[character_index] == SOLID) {
-					texture_pixel_colour = field->characters[field_coord].palette->solid;
-				} else {
-					texture_pixel_colour = field->characters[field_coord].palette->empty;
-				}
-
-				texture_pixel[texture_col * width + texture_row] =
-				*texture_pixel++ = (
-									(texture_pixel_colour->a << 24) |
-									(texture_pixel_colour->r << 16) |
-									(texture_pixel_colour->g << 8) | 
-									(texture_pixel_colour->b)
-								   ); 
+	for (size_t field_row = 0; field_row < field_width; ++field_row) {
+		for (size_t field_col = 0; field_col < field_height; ++field_height) {
+			SDL_Render
+		
+			field_coord = field_col * field_width + field_row;
+		
+			if (field[field_coord].identifier == GHOST) {
+				src_rect = {
+					.x = 0,
+					.y = 0,
+					.w = texture_width,
+					.h = texture_height
+				};
+				
+				dst_rect = {
+					.x = field_row,
+					.y = field_col,
+					.w = texture_width * cell_width * width_scale,
+					.h = texture_height * cell_height * height_scale
+				};
+				
+				SDL_RenderCopy(renderer, texture, src_rect, dst_rect);
 			}
 		}
 	}
-
-	SDL_UnlockTexture(game->texture);
-
 }
 
 public int[] resizePixels(int[] pixels,int w1,int h1,int w2,int h2) {
@@ -144,53 +126,6 @@ void draw_field(GameField* field)
 	int texture_width = GAME_DEFAULT_INITIALISER;
 	int texture_height = GAME_DEFAULT_INITIALISER;
 
-	if (SDL_QueryTexture(game->texture, NULL, NULL, &texture_width, &texture_height) < 0) {
-		GAME_LOG_FATAL("Unable to query game texture: %s\n", SDL_GetError());
-		return SDL_FAILURE;
-	}
-
-	// ensure that window resize is to an integer multiple of field_width
-	int width_scale_factor = texture_width / field_width;
-	int height_scale_factor = texture_height / field_height;
-
-	void* texture_pixels = NULL;
-	int texture_pitch = GAME_DEFAULT_INITIALISER;
-	if (SDL_LockTexture(game->texture, NULL, &texture_pixels, &texture_pitch) < 0) {
-		GAME_LOG_FATAL("Unable to query game texture: %s\n", SDL_GetError());
-		return SDL_FAILURE;
-	}
-	
-	u32* texture_pixel = NULL;
-	SDL_Colour* texture_pixel_colour = NULL;
-	size_t field_coord = GAME_DEFAULT_INITIALISER;
-
-	for (size_t texture_row = 0; texture_row < texture_width; ++texture_row) {
-		texture_pixel = (u32 *)((u8 *)texture_pixels + texture_row * texture_pitch);
-		for (size_t texture_col = 0; texture_col < texture_height; ++texture_col) {
-			field_coord = ((texture_col % height_scale) * field_width) + (texture_row % width_scale);
-			
-			for (size_t character_index = 0; character_index < 8 * 8; ++character_index) {
-				if (field->characters[field_coord].glyph->matrix[character_index] == SOLID) {
-					texture_pixel_colour = field->characters[field_coord].palette->solid;
-				} else {
-					texture_pixel_colour = field->characters[field_coord].palette->empty;
-				}
-
-				for (size_t width_scale_count = 0; width_scale_count < width_scale; ++width_scale_count) {
-					*texture_pixel++ = (
-										(texture_pixel_colour->a << 24) |
-										(texture_pixel_colour->r << 16) |
-										(texture_pixel_colour->g << 8) | 
-										(texture_pixel_colour->b)
-									   ); 
-				}
-			}
-		}
-	}
-
-	SDL_UnlockTexture(game->texture);
-
-}
 
 void free_field(GameField* field)
 {

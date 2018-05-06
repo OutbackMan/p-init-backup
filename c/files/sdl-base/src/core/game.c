@@ -86,6 +86,7 @@ void game_exit(Game* game)
 	if (game->renderer != NULL) SDL_DestroyRenderer(game->renderer);
 	if (game->window != NULL) SDL_DestroyWindow(game->window);
 	if (SDL_WasInit(SDL_INIT_EVERYTHING)) SDL_Quit();
+	// SDL_QuitSubSystem(); SDL_InitSubSystem();
 }
 
 
