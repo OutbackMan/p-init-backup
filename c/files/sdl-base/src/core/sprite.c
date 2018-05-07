@@ -1,9 +1,3 @@
-typedef struct {
-  u32 width;
-  u32 height;
-  GameCharacter* characters;
-} GameSprite;
-
 int load_sprite(GameSprite* game_sprite, FILE* sprite_file)
 {
 	if (sprite_file != NULL) {
@@ -49,28 +43,26 @@ int load_sprite(GameSprite* game_sprite, FILE* sprite_file)
 		}
 		fseek(sprite_file, 1, SEEK_CUR);
 		
-		GAME_XMALLOC(sprite_file->characters, sizeof(GameCharacter) * sprite_file->width * sprite_file->height);
+		GAME_XMALLOC(sprite_file->colours, sizeof(GameCharacter) * sprite_file->width * sprite_file->height);
 
 		u8 red_colour_component = GAME_DEFAULT_INITIALISER;
 		u8 green_colour_component = GAME_DEFAULT_INITIALISER;
 		u8 blue_colour_component = GAME_DEFAULT_INITIALISER;
 		SDL_Colour character_colour = GAME_DEFAULT_INITIALISER;
 
-		for (size_t pixel_row = 0; pixel_row < width; ++pixel_row) {
-			for (size_t pixel_col = 0; pixel_col < height; ++pixel_col) {
-				fread(&red_colour_component, sizeof(u8), 1, sprite_file);
-				fread(&green_colour_component, sizeof(u8), 1, sprite_file);
-				fread(&blue_colour_component, sizeof(u8), 1, sprite_file);
+		for (size_t pixel_index = 0; pixel_index < width * height; ++pixel_index) {
+			fread(&red_colour_component, sizeof(u8), 1, sprite_file);
+			fread(&green_colour_component, sizeof(u8), 1, sprite_file);
+			fread(&blue_colour_component, sizeof(u8), 1, sprite_file);
 
-				character_colour = {
-					.r = red_colour_component,
-					.g = green_colour_component,
-					.b = blue_colour_component,
-					.a = 255
-				};
+			character_colour = {
+				.r = red_colour_component,
+				.g = green_colour_component,
+				.b = blue_colour_component,
+				.a = 255
+			};
 
-				create_block_character(sprite_file->characters++, &character_colour); 
-			}
+			*sprite_file->colours++ = character_colour;
 		}
 
 	return SUCCESS;
@@ -79,18 +71,4 @@ int load_sprite(GameSprite* game_sprite, FILE* sprite_file)
 void free_sprite(GameSprite* game_sprite)
 {
   free(game_sprite->characters);
-}
-
-int create_block_character(GameCharacter* character, SDL_Colour* character_colour)
-{
-	character->width = 8;
-	character->height = 8;
-	
-	character->palette->solid_colour = character_colour;
-	character->palette->empty_colour = character_colour;
-
-	character->glyph = {
-			
-	};
-
 }

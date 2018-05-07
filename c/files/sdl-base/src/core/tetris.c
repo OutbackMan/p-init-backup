@@ -41,10 +41,26 @@ void move() {
 }
 // rotate_index()
 
+bool is_collision()
+{
+	if (t->shape[s_y * s_w * s_x] == SOLID && field[s_y + t->y * f_w + s_x + t->x])	{
+		return true;		
+	}
+}
+
+void field_set_pos()
+{
+	if (is_solid()) {
+		field[] = shape_map[PIECE_ID_ENUM]
+	}	
+}
+
 void field_init(width, height)
 {
   // set all to EMPTY
 }
+
+// could have field cells as bit map 0bPIECE_ID010101010COLOUR
 
 // when testing incrementally, run inside of debugger 
 void render_field()
@@ -53,9 +69,10 @@ void render_field()
   SDL_SetRenderDrawColour(ren, 0xff, 0xff, 0xff);
   SDL_RenderClear(ren);
 
-  if (field[x][y] != PIECE) {
+  if (field[x][y] == EMPTY) {
 	SDL_RenderDrawPoint(ren, x * (win_w / field_w) + win_w / field_w / 2);
   } else {
+	SDL_Colour draw_colour = shape_map[field[x][y]]->colour[x % s_width][y];
 	SDL_Rect block_draw = {
 		.x = x * (win_w / field_w),
 		.y = y * (win_w / field_w),
