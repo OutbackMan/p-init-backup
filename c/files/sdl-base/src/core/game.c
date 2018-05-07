@@ -1,7 +1,4 @@
 #include "core/game.h"
-typedef struct {
-	// renderer, surface, window, etc.	
-} Game;
 #include "core/texture.h"
 #include "core/surface.h"
 #include "core/events.h"
@@ -15,11 +12,6 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 		
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		GAME_LOG_FATAL("Unable to initialise game SDL backend: %s\n", SDL_GetError());	
-		return SDL_FAILURE;
-	}
-
-	if (TTF_Init() == -1) {
-		GAME_LOG_FATAL("Unable to initialise SDL_ttf backend: %s\n", TTF_GetError());	
 		return SDL_FAILURE;
 	}
 
@@ -39,22 +31,6 @@ GAME_STATUS game_start(Game* game, GAME_ArgTable* arg_table)
 		GAME_LOG_FATAL("Unable to create game renderer: %s\n", SDL_GetError());	
 		return SDL_FAILURE;
 	}
-
-	GameWorld game_world = GAME_DEFAULT_INITIALISER;
-	// creates and loads starting map
-	game__world_init(&game_world);
-
-	game_texture = SDL_CreateTexture(game_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-											game_width, game_height);
-
-	if (game_texture == NULL) {
-		GAME_LOG_FATAL("Unable to create game texture: %s\n", SDL_GetError());	
-		return SDL_FAILURE;
-	}
-
-	// load assets here??
-
-	game->is_running = true;
 
 	return GAME_SUCCESS;
 }

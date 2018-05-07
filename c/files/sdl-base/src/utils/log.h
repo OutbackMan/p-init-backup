@@ -36,13 +36,11 @@ GAME_INTERNAL struct {
 	const char* level_names[LOG__NUM_LOG_LEVELS];
 	const char* level_colours[LOG__NUM_LOG_LEVELS];
 	FILE* log_file;
-	lock_function
 } __log = {
 	.in_release_mode = false,	
 	.level_names = {"INFO", "WARN", "FATAL"},
 	.level_colours = {},
-	.log_file = NULL,
-	.lock_function = NULL
+	.log_file = NULL
 };
 	// put inside ansi-colour-defs.h
 	#define ANSI_COLOUR_CLEAR = "\x1b[0m";
@@ -51,28 +49,9 @@ GAME_INTERNAL struct {
 	#define ANSI_COLOUR_ORANGE = "\x1b[35m"; 
 	#define ANSI_COLOUR_RED = "\x1b[31m"; 
 
-GAME_INTERNAL void log_acquire_lock(void)
-{
-	if (__log.lock_function != NULL) {
-		__log.lock_function();		
-	}
-}
-
-GAME_INTERNAL void log_release_lock(void)
-{
-	if (__log.lock_function != NULL) {
-		__log.lock_function();		
-	}
-}
-
 void game__log_set_log_file(FILE* log_file)
 {
 	__log.log_file = log_file;	
-}
-
-void game__log_set_lock_function()
-{
-	
 }
 
 void game__log_init(GAME_LOG_MODE log_mode, FILE* log_file, lock_function)
@@ -98,8 +77,6 @@ void game__log_log(
 	if (__log.in_release_mode && log_type != LOG_FATAL) {
 		return;		
 	}
-
-	log_acquire_lock();
 
 	time_t current_time = time(NULL);	
 	struct tm* local_time = localtime(&current_time);
@@ -148,6 +125,4 @@ void game__log_log(
 		va_end(args);
 		fprintf(stderr, "\n");
 	}
-
-	log_release_lock();
 }

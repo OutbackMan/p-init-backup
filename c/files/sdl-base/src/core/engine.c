@@ -11,7 +11,6 @@ typedef struct {
 	size_t y;
 	size_t width;
 	size_t height;
-	int rotation;
 	SDL_Colour* colours;
 	SHAPE_FILL_TYPE* shape;
 } Sprite;
@@ -72,7 +71,31 @@ void fill(x1, y1, x2, y2, colour)
 
 void draw_string(x, y, str)
 {
-	// relate to sprite drawing	
+	for (char* c = str; c != '\0'; ++c) {
+		draw_char(x++, c);
+	}
+}
+
+void draw_char(x, y, ch)
+{
+	SDL_Rect block_draw = {0}; 
+
+	for (size_t c_x = 0; c_x < f_w; ++c_x) {
+		for (size_t c_y = 0; c_y < f_y; ++c_y) {
+			block_draw = {
+				.x = (x + c_x) * (win_w / field_w),
+				.y = (y + c+y) * (win_w / field_w),
+				.w = (win_w / field_w) / f_w,
+				.h = (win_w / field_w) / f_w
+			};
+			if (ch == 'a') {
+				SDL_Colour colour = char_a->colours[c_y * f_w + c+x];				
+				SDL_SetRenderDrawColour(ren, colour);
+			}
+		}
+	}
+
+	SDL_RenderFillRect(ren, block_draw);
 }
 
 // draw_circle, fill_circle
