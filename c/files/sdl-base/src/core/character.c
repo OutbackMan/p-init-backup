@@ -1,3 +1,5 @@
+// learned (u32 *)(u8 *), nearest neighbour interpolation
+
 static const size_t GAME_FIELD_CELL_SIZE = 8; // i.e. font size
 
 typedef enum {
