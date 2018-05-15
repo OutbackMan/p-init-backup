@@ -34,7 +34,7 @@ void snake_draw(Snake* snake)
 	};
 
 	SDL_Rect dst = {
-		.w = SPRITE_WIDTH,
+		.w = SPRITE_WIDTH, // this can be larger or smaller
 		.h = SPRITE_HEIGHT
 	};
 
