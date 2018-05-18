@@ -5,6 +5,8 @@ This is a short document describing my preferred coding style for C projects. Co
 > **NOTE**: 
 	* This guide assumes you are using a 'Visual Studio 2013 C99' compatible C compiler, i.e. a C compiler implementing at least the same features as Visual Studio 2013.
 
+NEED TO ADD SPECIFICS FOR UNIX/WINDOWS CODE
+
 ## Opening Remarks
 	* Good programmers write consistent code that humans can understand.
 	* Don't write for future needs.
@@ -42,6 +44,19 @@ For example:
 # Cross Platform C Profiler - https://github.com/Celtoys/Remotery
 lib/remotery/Remotery.h
 lib/remotery/Remotery.c
+```
+* Code that is specific to a particular system should be placed in a correspondingly named folder if more than one file is required, otherwise simply prepend the file name with the system name.
+For example:
+[//]: # (will need a file to tie all system specific headers together) 
+```bash
+# unix, > 1 file
+src/graphics/unix/window.h
+src/graphics/unix/renderer.h
+
+# 1 file
+src/graphics/renderer-win.h
+src/graphics/renderer-linux.h
+src/graphics/renderer-mac.h
 ```
 ### Formatting
 * 4 spaces to indent, not tabs. 
@@ -305,7 +320,7 @@ typedef struct {
 * Have constructor functions take struct as argument and return project specific status code.
 ### Comments
 * Only comment non-obvious code. Ensure that the reader doesn't have to make guesses. Make sure that the purpose and logic are clear to a reasonably skilled professional.
-* When writing comments use properly constructed sentences, including punctuation. Furthermore, don't make assumptions or make implications about race, gender, religion, political orientation or anything else that isn't relevant to the project.
+* When writing comments use properly constructed sentences, including punctuation.
 * Use `//` line comments at end of declaration or statement.
 For example:
 ```c
