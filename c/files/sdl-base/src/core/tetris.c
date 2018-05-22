@@ -17,6 +17,7 @@ typedef struct {
 
 void tetromino_draw()
 {
+	// this only works providing the render size >= field size
 	for (size_t x = 0; x < t->width; ++x) {
 		for (size_t y = 0; y < t->height; ++y) {
 			if (t->shape[y * t->width + x] == FULL) {

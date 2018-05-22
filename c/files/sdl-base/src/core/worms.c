@@ -47,28 +47,26 @@ void perlin_noise_1d(
 	}
 }
 
-void create_map()
+void create_map(int map, unsigned map_width, unsigned map_height)
 {
-	float surface_heights[map_width];
-	float noise_seeds[map_width];
-
+	float perlin_noise_seeds[map_width];
+	perlin_noise_seeds[0] = 0.5f;
 	for (int i = 0; i < map_width; ++i) {
-		noise_seeds[i] = rand() / RAND_MAX;		
+		perlin_noise_seeds[i] = (float)rand() / (float)RAND_MAX;		
 	}
-	noise_seeds[0] = 0.5f; // ensures that we start halfway 
 
-	perlin_noise(noise_seeds, surface_heights);
+	float map_heights[map_width];
+	perlin_noise(map_width, perlin_noise_seeds, 8, 2.0f, map_heights);
 
-	for (int x = 0; x < map_width; ++x) {
-		for (int y = 0; y < map_height; ++y) {
-			if (y >= surface[x] * map_height) {
-				map[y * map_width + x] = LAND;	
+	for (int map_x = 0; map_x < map_width; ++map_x) {
+		for (int map_y = 0; map_y < map_height; ++map_y) {
+			if (map_y >= map_heights[map_x] * map_height) {
+				map[map_y * map_width + map_x] = LAND; // 1
 			} else {
-				map[y * map_width + x] = SKY;	
+				map[map_y * map_width + map_x] = SKY; // 0
 			}	
 		}		
 	}	
-
 }
 
 int main()
@@ -78,6 +76,7 @@ int main()
 
 	const int MAP_WIDTH = 1024;
 	const int MAP_HEIGHT = 512;
-	// 1 for land, 0 for no land
-	int map[MAP_WIDTH * MAP_HEIGHT] = {0};
+	int map[MAP_WIDTH * MAP_HEIGHT];
+	create_map(map, MAP_WIDTH, MAP_HEIGHT);
+
 }
